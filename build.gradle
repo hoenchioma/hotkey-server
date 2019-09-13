@@ -20,6 +20,8 @@ javafx {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile group: 'org.json', name: 'json', version: '20190722'
 }
 
 mainClassName = "com.rfw.hotkey_server.Main"
