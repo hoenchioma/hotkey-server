@@ -69,30 +69,81 @@ public class KeyboardController {
         robot.keyRelease(KeyEvent.VK_F4);
         robot.keyRelease(KeyEvent.VK_ALT);
     }
-    public void type(int asciiCode){
+    public void type(int keyCode){
 
-        keyPress(asciiCode);
+        keyPress(keyCode);
         robot.delay(10);
-        keyRelease(asciiCode);
+        keyRelease(keyCode);
 
-    }
-    public void pressLeftArrowKey() {
-        type(KeyEvent.VK_LEFT);
-    }
-    public void pressDownArrowKey() {
-        type(KeyEvent.VK_DOWN);
-    }
-    public void pressRightArrowKey() {
-        type(KeyEvent.VK_RIGHT);
-    }
-    public void pressUpArrowKey() {
-        type(KeyEvent.VK_UP);
-    }
+    }   
+    
 
-    public void pressF5Key() {
-        type(KeyEvent.VK_F5);
+    /**
+     * There will be Three types of keyWord
+     * 1. TYPE_MODIFIER
+     * 2. TYPE_CHARACTER
+     * 3. TYPE_COMMAND
+     */
+    public void pressCommandButton(String keyword){
+        switch (keyword){
+            case "COPY" :
+                keyPress(KeyEvent.VK_CONTROL);
+                keyPress(KeyEvent.VK_S);
+                robot.delay(10);
+                keyRelease(KeyEvent.VK_S);
+                keyRelease(KeyEvent.VK_CONTROL);
+                break;
+            case "PASTE" :
+                keyPress(KeyEvent.VK_CONTROL);
+                keyPress(KeyEvent.VK_V);
+                robot.delay(10);
+                keyRelease(KeyEvent.VK_V);
+                keyRelease(KeyEvent.VK_CONTROL);
+                break;
+        }
     }
-
-
+    public void pressModifierButton(String keyword){
+        switch (keyword){
+            case "ESC" :
+                type(KeyEvent.VK_ESCAPE);
+                break;
+            case "HOME" :
+                type(KeyEvent.VK_HOME);
+                break;
+            case "TAB" :
+                type(KeyEvent.VK_TAB);
+                break;
+            case "PGUP" :
+                type(KeyEvent.VK_PAGE_UP);
+                break;
+            case "PGDN" :
+                type(KeyEvent.VK_PAGE_DOWN);
+                break;
+            case "UP" :
+                type(KeyEvent.VK_UP);
+                break;
+            case "DOWN" :
+                type(KeyEvent.VK_DOWN);
+                break;
+            case "LEFT" :
+                type(KeyEvent.VK_LEFT);
+                break;
+            case "RIGHT" :
+                type(KeyEvent.VK_RIGHT);
+                break;
+        }
+    }
+    public void pressAndHoldButton(String keyword){
+        switch (keyword){
+            case "SHIFT" :
+                keyPress(KeyEvent.VK_SHIFT);
+                robot.delay(10);
+                keyRelease(KeyEvent.VK_SHIFT);
+                break;
+        }
+    }
+    public void pressCharacterButton(String keyword){
+        type(Integer.parseInt(keyword));
+    }
 
 }
