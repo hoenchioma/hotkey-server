@@ -1,5 +1,7 @@
 package com.rfw.hotkey_server.net;
 
+import com.rfw.hotkey_server.util.PacketHandler;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,6 +18,8 @@ public class Receiver extends Thread {
     private PrintWriter out;
     private String clientName;
 
+    private PacketHandler packetHandler;
+
     public volatile boolean stop = false;
 
     Receiver(Socket socket, BufferedReader in, PrintWriter out, String clientName, Server server) {
@@ -24,6 +28,7 @@ public class Receiver extends Thread {
         this.out = out;
         this.clientName = clientName;
         this.socket = socket;
+        this.packetHandler = new PacketHandler();
     }
 
     @Override
@@ -40,7 +45,7 @@ public class Receiver extends Thread {
     }
 
     private void handleMessage(String message) {
-        // TODO: implement JSON parsing and message handling
         LOGGER.log(Level.INFO, "Receiver.handleMessage: " + message);
+        packetHandler.handle(message);
     }
 }
