@@ -88,7 +88,6 @@ public class KeyboardController {
         keyPress(keyCode);
         robot.delay(10);
         keyRelease(keyCode);
-
     }
 
 
@@ -160,7 +159,17 @@ public class KeyboardController {
     }
 
     public void pressCharacterButton(String keyword) {
-        type(Integer.parseInt(keyword));
+        char c = Character.toUpperCase(keyword.charAt(0));
+        try {
+            int keyCode;
+            if (c == ' ') keyCode = KeyEvent.VK_SPACE;
+            // use reflection to get the keycode
+            else keyCode = KeyEvent.class.getField("VK_" + c).getInt(null);
+            type(keyCode);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            LOGGER.log(Level.SEVERE, "KeyboardController.pressCharacterButton: KeyEvent class reflection error");
+            e.printStackTrace();
+        }
     }
 
     public void handleIncomingPacket(JSONObject packet) {
