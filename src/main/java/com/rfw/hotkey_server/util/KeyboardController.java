@@ -1,40 +1,51 @@
 package com.rfw.hotkey_server.util;
 
+import org.json.JSONObject;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class KeyboardController {
-    Robot robot;
-    public KeyboardController(){
-        try{
+    private static final Logger LOGGER = Logger.getLogger(KeyboardController.class.getName());
+
+    private Robot robot;
+
+    public KeyboardController() {
+        try {
             robot = new Robot();
-        }
-        catch(Exception e){
-            e.printStackTrace();;
-            JOptionPane.showMessageDialog(null,"Error Occurred!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error Occurred!");
         }
     }
+
     public void keyPress(int keyCode) {
         robot.keyPress(keyCode);
     }
+
     public void keyRelease(int keyCode) {
         robot.keyRelease(keyCode);
     }
-    public void ctrlS(){
+
+    public void ctrlS() {
         keyPress(KeyEvent.VK_CONTROL);
         keyPress(KeyEvent.VK_S);
         robot.delay(10);
         keyRelease(KeyEvent.VK_S);
         keyRelease(KeyEvent.VK_CONTROL);
     }
-    public void ctrlV(){
+
+    public void ctrlV() {
         keyPress(KeyEvent.VK_CONTROL);
         keyPress(KeyEvent.VK_V);
         robot.delay(10);
         keyRelease(KeyEvent.VK_V);
         keyRelease(KeyEvent.VK_CONTROL);
     }
+
     public void ctrlAltT() {
         robot.keyPress(KeyEvent.VK_CONTROL);
         robot.keyPress(KeyEvent.VK_ALT);
@@ -44,6 +55,7 @@ public class KeyboardController {
         robot.keyRelease(KeyEvent.VK_ALT);
         robot.keyRelease(KeyEvent.VK_CONTROL);
     }
+
     public void ctrlAltL() {
         robot.keyPress(KeyEvent.VK_CONTROL);
         robot.keyPress(KeyEvent.VK_ALT);
@@ -53,6 +65,7 @@ public class KeyboardController {
         robot.keyRelease(KeyEvent.VK_ALT);
         robot.keyRelease(KeyEvent.VK_CONTROL);
     }
+
     public void ctrlShiftZ() {
         robot.keyPress(KeyEvent.VK_CONTROL);
         robot.keyPress(KeyEvent.VK_SHIFT);
@@ -62,6 +75,7 @@ public class KeyboardController {
         robot.keyRelease(KeyEvent.VK_SHIFT);
         robot.keyRelease(KeyEvent.VK_CONTROL);
     }
+
     public void altF4() {
         robot.keyPress(KeyEvent.VK_ALT);
         robot.keyPress(KeyEvent.VK_F4);
@@ -69,14 +83,14 @@ public class KeyboardController {
         robot.keyRelease(KeyEvent.VK_F4);
         robot.keyRelease(KeyEvent.VK_ALT);
     }
-    public void type(int keyCode){
 
+    public void type(int keyCode) {
         keyPress(keyCode);
         robot.delay(10);
         keyRelease(keyCode);
 
-    }   
-    
+    }
+
 
     /**
      * There will be Three types of keyWord
@@ -84,16 +98,16 @@ public class KeyboardController {
      * 2. TYPE_CHARACTER
      * 3. TYPE_COMMAND
      */
-    public void pressCommandButton(String keyword){
-        switch (keyword){
-            case "COPY" :
+    public void pressCommandButton(String keyword) {
+        switch (keyword) {
+            case "COPY":
                 keyPress(KeyEvent.VK_CONTROL);
                 keyPress(KeyEvent.VK_S);
                 robot.delay(10);
                 keyRelease(KeyEvent.VK_S);
                 keyRelease(KeyEvent.VK_CONTROL);
                 break;
-            case "PASTE" :
+            case "PASTE":
                 keyPress(KeyEvent.VK_CONTROL);
                 keyPress(KeyEvent.VK_V);
                 robot.delay(10);
@@ -102,48 +116,63 @@ public class KeyboardController {
                 break;
         }
     }
-    public void pressModifierButton(String keyword){
-        switch (keyword){
-            case "ESC" :
+
+    public void pressModifierButton(String keyword) {
+        switch (keyword) {
+            case "ESC":
                 type(KeyEvent.VK_ESCAPE);
                 break;
-            case "HOME" :
+            case "HOME":
                 type(KeyEvent.VK_HOME);
                 break;
-            case "TAB" :
+            case "TAB":
                 type(KeyEvent.VK_TAB);
                 break;
-            case "PGUP" :
+            case "PGUP":
                 type(KeyEvent.VK_PAGE_UP);
                 break;
-            case "PGDN" :
+            case "PGDN":
                 type(KeyEvent.VK_PAGE_DOWN);
                 break;
-            case "UP" :
+            case "UP":
                 type(KeyEvent.VK_UP);
                 break;
-            case "DOWN" :
+            case "DOWN":
                 type(KeyEvent.VK_DOWN);
                 break;
-            case "LEFT" :
+            case "LEFT":
                 type(KeyEvent.VK_LEFT);
                 break;
-            case "RIGHT" :
+            case "RIGHT":
                 type(KeyEvent.VK_RIGHT);
                 break;
         }
     }
-    public void pressAndHoldButton(String keyword){
-        switch (keyword){
-            case "SHIFT" :
+
+    public void pressAndHoldButton(String keyword) {
+        switch (keyword) {
+            case "SHIFT":
                 keyPress(KeyEvent.VK_SHIFT);
                 robot.delay(10);
                 keyRelease(KeyEvent.VK_SHIFT);
                 break;
         }
     }
-    public void pressCharacterButton(String keyword){
+
+    public void pressCharacterButton(String keyword) {
         type(Integer.parseInt(keyword));
+    }
+
+    public void handleIncomingPacket(JSONObject packet) {
+        String action = packet.getString("action");
+        switch (action) {
+            case "char":
+                pressCharacterButton(packet.getString("key"));
+                break;
+            // TODO: (Wadith) implement other actions
+            default:
+                LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: invalid keyboard action");
+        }
     }
 
 }
