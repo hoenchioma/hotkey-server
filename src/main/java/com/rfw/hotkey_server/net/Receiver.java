@@ -41,5 +41,6 @@ public class Receiver extends Thread {
 
     private void handleMessage(String message) {
         // TODO: implement JSON parsing and message handling
+        LOGGER.log(Level.INFO, "Receiver.handleMessage: " + message);
     }
 }
