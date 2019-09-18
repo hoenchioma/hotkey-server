@@ -164,7 +164,8 @@ public class KeyboardController {
             int keyCode;
             if (c == ' ') keyCode = KeyEvent.VK_SPACE;
             else if (c == '\n') keyCode = KeyEvent.VK_ENTER;
-            // use reflection to get the keycode
+            else if (c == '\b') keyCode = KeyEvent.VK_BACK_SPACE;
+                // use reflection to get the keycode
             else keyCode = KeyEvent.class.getField("VK_" + c).getInt(null);
             type(keyCode);
         } catch (NoSuchFieldException | IllegalAccessException e) {
