@@ -163,7 +163,9 @@ public class KeyboardController {
         try {
             int keyCode;
             if (c == ' ') keyCode = KeyEvent.VK_SPACE;
-            // use reflection to get the keycode
+            else if (c == '\n') keyCode = KeyEvent.VK_ENTER;
+            else if (c == '\b') keyCode = KeyEvent.VK_BACK_SPACE;
+                // use reflection to get the keycode
             else keyCode = KeyEvent.class.getField("VK_" + c).getInt(null);
             type(keyCode);
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -171,7 +173,7 @@ public class KeyboardController {
             e.printStackTrace();
         }
     }
-
+ 
     public void handleIncomingPacket(JSONObject packet) {
         String action = packet.getString("action");
         switch (action) {
