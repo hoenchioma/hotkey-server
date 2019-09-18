@@ -163,6 +163,7 @@ public class KeyboardController {
         try {
             int keyCode;
             if (c == ' ') keyCode = KeyEvent.VK_SPACE;
+            else if (c == '\n') keyCode = KeyEvent.VK_ENTER;
             // use reflection to get the keycode
             else keyCode = KeyEvent.class.getField("VK_" + c).getInt(null);
             type(keyCode);

@@ -13,6 +13,7 @@ public class PacketHandler {
     private static final Logger LOGGER = Logger.getLogger(PacketHandler.class.getName());
 
     private KeyboardController keyboardController = new KeyboardController();
+    private MouseController mouseController = new MouseController();
 
     public void handle(JSONObject packet) {
         String packetType = packet.getString("type");
@@ -21,6 +22,8 @@ public class PacketHandler {
                 keyboardController.handleIncomingPacket(packet);
                 break;
             // TODO: handle other types of packets
+            case "mouse":
+                break;/////TODO
             default:
                 LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type");
         }

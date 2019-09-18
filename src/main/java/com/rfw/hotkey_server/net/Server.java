@@ -33,6 +33,7 @@ public class Server {
                     System.out.println("Connected to " + clientName);
                     new Receiver(socket, in, out, clientName, this).start();
                     stop = true; // stop server after connecting to single client
+
                 }
             }
         }
