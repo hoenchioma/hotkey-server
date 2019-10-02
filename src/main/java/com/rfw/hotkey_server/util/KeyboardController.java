@@ -149,12 +149,6 @@ public class KeyboardController {
                 break;
         }
     }
-    public void printPunctuation (char key){
-        switch (key){
-
-        }
-
-    }
 
     public void pressAndHoldButton(String keyword) {
         switch (keyword) {
