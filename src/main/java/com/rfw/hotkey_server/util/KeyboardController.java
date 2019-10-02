@@ -180,6 +180,10 @@ public class KeyboardController {
             case "char":
                 pressCharacterButton(packet.getString("key"));
                 break;
+            case "modifier" :
+                pressModifierButton(packet.getString("key"));
+            case "command" :
+                pressCommandButton(packet.getString("key"));
             // TODO: (Wadith) implement other actions
             default:
                 LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: invalid keyboard action");

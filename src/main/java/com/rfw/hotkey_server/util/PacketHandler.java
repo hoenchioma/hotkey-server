@@ -23,9 +23,10 @@ public class PacketHandler {
                 break;
             // TODO: handle other types of packets
             case "mouse":
-                break;/////TODO
+                mouseController.handleIncomingPacket(packet);
+                break;
             default:
-                LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type");
+                LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type "+ packetType);
         }
     }
 
