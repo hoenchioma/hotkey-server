@@ -33,6 +33,7 @@ public class Server {
                     System.out.println("Connected to " + clientName);
                     new Receiver(socket, in, out, clientName, this).start();
                     stop = true; // stop server after connecting to single client
+                    LOGGER.log(Level.INFO, "Server.startServer: Server stopped");
                 }
             }
         }
@@ -65,7 +66,7 @@ public class Server {
 
     public static void main(String[] args) {
         try {
-            int port = 6969;
+            int port = 1234;
             Server server = new Server(port);
 
             try {
