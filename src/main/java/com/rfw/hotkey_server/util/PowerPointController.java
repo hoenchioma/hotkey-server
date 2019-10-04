@@ -36,13 +36,17 @@ public class PowerPointController {
 
     public void pressModifierButton(String keyword) {
         switch (keyword) {
-            case "F5" :
+            case "beginning" :
                 type(KeyEvent.VK_F5);
+                break;
+            case "current" :
+                keyPress(KeyEvent.VK_SHIFT);
+                keyPress(KeyEvent.VK_F5);
+                keyRelease(KeyEvent.VK_SHIFT);
+                keyRelease(KeyEvent.VK_F5);
                 break;
             case "ESC" :
                 type(KeyEvent.VK_ESCAPE);
-            case "PGDN":
-                type(KeyEvent.VK_PAGE_DOWN);
                 break;
             case "UP":
                 type(KeyEvent.VK_UP);
@@ -67,7 +71,7 @@ public class PowerPointController {
 
                 // TODO: (Wadith) implement other actions
             default:
-                LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: invalid keyboard action");
+                LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action");
         }
     }
 }
