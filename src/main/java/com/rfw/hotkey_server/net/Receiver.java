@@ -36,6 +36,10 @@ public class Receiver extends Thread {
         while (!stop && socket.isConnected()) {
             try {
                 String line = in.readLine();
+                if (line == null) { // check if the client is disconnected
+                    LOGGER.log(Level.INFO, "Receiver.run: client disconnected, closing socket ...");
+                    break;
+                }
                 handleMessage(line);
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "Receiver.run: IO error closing connection");
@@ -45,7 +49,6 @@ public class Receiver extends Thread {
     }
 
     private void handleMessage(String message) {
-        LOGGER.log(Level.INFO, "Receiver.handleMessage: " + message);
         packetHandler.handle(message);
     }
 }

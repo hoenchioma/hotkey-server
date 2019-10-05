@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -21,7 +22,10 @@ public class Server {
     }
 
     private void startServer() throws IOException {
-        System.out.println("Starting server on port " + serverSocket.getLocalPort() + " ...");
+        System.out.println("Starting server ...");
+        System.out.printf("IP Address: %s\nPort: %d\n", getLocalIpAddress(), serverSocket.getLocalPort());
+        System.out.println();
+
         while (!stop) {
             Socket socket = serverSocket.accept();
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -30,10 +34,8 @@ public class Server {
             if (checkSocket(socket, in, out)) {
                 String clientName = handshake(socket, in, out);
                 if (clientName != null) {
-                    System.out.println("Connected to " + clientName);
+                    System.out.printf("Connected to %s [%s]\n", clientName, getRemoteSocketAddress(socket));
                     new Receiver(socket, in, out, clientName, this).start();
-                    stop = true; // stop server after connecting to single client
-                    LOGGER.log(Level.INFO, "Server.startServer: Server stopped");
                 }
             }
         }
@@ -62,6 +64,22 @@ public class Server {
             LOGGER.log(Level.SEVERE, "Server.handshake: Handshake failed closing connection");
             return null;
         }
+    }
+
+    /** helper methods **/
+
+    private static String getLocalIpAddress() {
+        try (final DatagramSocket socket = new DatagramSocket()) {
+            socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+            return socket.getLocalAddress().getHostAddress();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Server.getLocalIpAddress: error getting local IP address");
+        }
+        return null;
+    }
+
+    private static String getRemoteSocketAddress(Socket socket) {
+        return socket.getRemoteSocketAddress().toString().replace("/","");
     }
 
     public static void main(String[] args) {

@@ -31,6 +31,7 @@ public class PacketHandler {
     }
 
     public void handle(String message) {
+//        LOGGER.log(Level.INFO, "PacketHandler.handle: " + message);
         handle(new JSONObject(new JSONTokener(message)));
     }
 }
