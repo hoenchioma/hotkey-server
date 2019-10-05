@@ -42,8 +42,9 @@ public class PowerPointController {
             case "current" :
                 keyPress(KeyEvent.VK_SHIFT);
                 keyPress(KeyEvent.VK_F5);
-                keyRelease(KeyEvent.VK_SHIFT);
+                robot.delay(10);
                 keyRelease(KeyEvent.VK_F5);
+                keyRelease(KeyEvent.VK_SHIFT);
                 break;
             case "ESC" :
                 type(KeyEvent.VK_ESCAPE);
