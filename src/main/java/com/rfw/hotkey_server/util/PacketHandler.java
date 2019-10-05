@@ -14,7 +14,7 @@ public class PacketHandler {
 
     private KeyboardController keyboardController = new KeyboardController();
     private MouseController mouseController = new MouseController();
-
+    private PowerPointController powerPointController = new PowerPointController();
     public void handle(JSONObject packet) {
         String packetType = packet.getString("type");
         switch (packetType) {
@@ -24,6 +24,9 @@ public class PacketHandler {
             // TODO: handle other types of packets
             case "mouse":
                 mouseController.handleIncomingPacket(packet);
+                break;
+            case  "ppt" :
+                powerPointController.handleIncomingPacket(packet);
                 break;
             default:
                 LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type "+ packetType);
