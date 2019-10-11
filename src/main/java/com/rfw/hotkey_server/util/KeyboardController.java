@@ -161,29 +161,14 @@ public class KeyboardController {
     }
 
     public void pressCharacterButton(String keyword) {
-//        char c = Character.toUpperCase(keyword.charAt(0));
-            char c = keyword.charAt(0);
-//         {
-//            int keyCode;
-//            if (c == ' ') keyCode = KeyEvent.VK_SPACE;
-//            else if (c == '\n') keyCode = KeyEvent.VK_ENTER;
-//            else if (c == '\b') keyCode = KeyEvent.VK_BACK_SPACE;
-//            else if (c == '(') keyCode = VK_LEFT_PARENTHESIS;
-//                // use reflection to get the keycode
-//            else keyCode = KeyEvent.class.getField("VK_" + c).getInt(null);
-//            LOGGER.log(Level.SEVERE,String.valueOf(c));
-            try{
-                typeCharacter(c);
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-            //type(keyCode);
-//        } catch (IllegalAccessException e) {
-//            LOGGER.log(Level.SEVERE, "KeyboardController.pressCharacterButton: KeyEvent class reflection error");
-//            e.printStackTrace();
-//        }
-
+        char c = keyword.charAt(0);
+        try {
+            typeCharacter(c);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
     public void doType(int... keyCodes) {
         int length = keyCodes.length;
         for (int i = 0; i < length; i++) {
@@ -195,6 +180,7 @@ public class KeyboardController {
         }
         robot.keyRelease(VK_SHIFT);
     }
+
     public void typeCharacter(char character) {
         switch (character) {
             case 'a': doType(VK_A); break;
@@ -295,8 +281,7 @@ public class KeyboardController {
             case '?': doType(VK_SHIFT, VK_SLASH); break;
             case ' ': doType(VK_SPACE); break;
             case '\b': doType(VK_BACK_SPACE); break;
-            default:
-                robot.keyRelease(VK_SHIFT);
+            default: robot.keyRelease(VK_SHIFT);
                 //throw new IllegalArgumentException("Cannot type character " + character);
         }
     }
@@ -307,11 +292,12 @@ public class KeyboardController {
             case "char":
                 pressCharacterButton(packet.getString("key"));
                 break;
-            case "modifier" :
+            case "modifier":
                 pressModifierButton(packet.getString("key"));
-            case "command" :
+                break;
+            case "command":
                 pressCommandButton(packet.getString("key"));
-            // TODO: (Wadith) implement other actions
+                break;
             default:
                 LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: invalid keyboard action");
         }
