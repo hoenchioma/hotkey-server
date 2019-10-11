@@ -103,9 +103,9 @@ public class KeyboardController {
         switch (keyword) {
             case "COPY":
                 keyPress(KeyEvent.VK_CONTROL);
-                keyPress(KeyEvent.VK_S);
+                keyPress(KeyEvent.VK_C);
                 robot.delay(10);
-                keyRelease(KeyEvent.VK_S);
+                keyRelease(KeyEvent.VK_C);
                 keyRelease(KeyEvent.VK_CONTROL);
                 break;
             case "PASTE":
