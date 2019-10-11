@@ -171,7 +171,7 @@ public class KeyboardController {
 //            else if (c == '(') keyCode = VK_LEFT_PARENTHESIS;
 //                // use reflection to get the keycode
 //            else keyCode = KeyEvent.class.getField("VK_" + c).getInt(null);
-            LOGGER.log(Level.SEVERE,String.valueOf(c));
+//            LOGGER.log(Level.SEVERE,String.valueOf(c));
             try{
                 typeCharacter(c);
             } catch (Exception e){

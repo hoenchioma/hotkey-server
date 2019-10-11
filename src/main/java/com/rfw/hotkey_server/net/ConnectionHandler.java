@@ -1,6 +1,7 @@
 package com.rfw.hotkey_server.net;
 
 import com.rfw.hotkey_server.util.PacketHandler;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,8 +10,8 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Receiver extends Thread {
-    private static final Logger LOGGER = Logger.getLogger(Receiver.class.getName());
+public class ConnectionHandler extends Thread {
+    private static final Logger LOGGER = Logger.getLogger(ConnectionHandler.class.getName());
 
     private Server server;
     private Socket socket;
@@ -22,13 +23,13 @@ public class Receiver extends Thread {
 
     public volatile boolean stop = false;
 
-    Receiver(Socket socket, BufferedReader in, PrintWriter out, String clientName, Server server) {
+    ConnectionHandler(Socket socket, BufferedReader in, PrintWriter out, String clientName, Server server) {
         this.server = server;
         this.in = in;
         this.out = out;
         this.clientName = clientName;
         this.socket = socket;
-        this.packetHandler = new PacketHandler();
+        this.packetHandler = new PacketHandler(this);
     }
 
     @Override
@@ -37,12 +38,12 @@ public class Receiver extends Thread {
             try {
                 String line = in.readLine();
                 if (line == null) { // check if the client is disconnected
-                    LOGGER.log(Level.INFO, "Receiver.run: client disconnected, closing socket ...");
+                    LOGGER.log(Level.INFO, "ConnectionHandler.run: client disconnected, closing socket ...");
                     break;
                 }
                 handleMessage(line);
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Receiver.run: IO error closing connection");
+                LOGGER.log(Level.SEVERE, "ConnectionHandler.run: IO error closing connection");
                 break;
             }
         }
@@ -50,5 +51,9 @@ public class Receiver extends Thread {
 
     private void handleMessage(String message) {
         packetHandler.handle(message);
+    }
+
+    public void sendPacket(JSONObject packet) {
+        out.println(packet);
     }
 }

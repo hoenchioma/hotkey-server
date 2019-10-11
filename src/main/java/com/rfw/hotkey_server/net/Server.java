@@ -1,13 +1,13 @@
 package com.rfw.hotkey_server.net;
 
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,38 +31,50 @@ public class Server {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-            if (checkSocket(socket, in, out)) {
-                String clientName = handshake(socket, in, out);
-                if (clientName != null) {
-                    System.out.printf("Connected to %s [%s]\n", clientName, getRemoteSocketAddress(socket));
-                    new Receiver(socket, in, out, clientName, this).start();
-                }
-            }
+            new Thread(() -> handleConnection(socket, in, out)).start(); // start a new thread to handle the connection
         }
     }
 
-    /**
-     * Check if socket is valid client
-     * @return if socket is valid client
-     */
-    private boolean checkSocket(Socket socket, BufferedReader in, PrintWriter out) {
-        // TODO: implement check socket
-        return true;
-    }
-
-    /**
-     * Exchange device names with server desktop
-     * @return client device name if handshake was successful
-     */
-    private String handshake(Socket socket, BufferedReader in, PrintWriter out) {
+    private void handleConnection(Socket socket, BufferedReader in, PrintWriter out) {
         try {
-            String clientName = in.readLine();
-            String deviceName = InetAddress.getLocalHost().getHostName();
-            out.println(deviceName);
-            return clientName;
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Server.handshake: Handshake failed closing connection");
-            return null;
+            String message = in.readLine();
+            JSONObject receivedPacket = new JSONObject(new JSONTokener(message));
+
+            switch (receivedPacket.getString("type")) {
+                case "handshake": // connection request
+                    String clientName = receivedPacket.getString("deviceName");
+                    switch (receivedPacket.getString("connectionType")) {
+                        case "normal":
+                            JSONObject responsePacket = new JSONObject();
+                            responsePacket.put("type", "handshake");
+                            responsePacket.put("deviceName", getDeviceName());
+                            out.println(responsePacket);
+
+                            new ConnectionHandler(socket, in, out, clientName, this).start();
+                            System.out.printf("Connected to %s [%s]\n", clientName, getRemoteSocketAddress(socket));
+                            System.out.println("Handler Type: normal");
+
+                            break;
+
+                        default:
+                            LOGGER.log(Level.SEVERE, "Server.handleConnection: unknown connection type requested");
+                    }
+                    break;
+
+                case "ping":
+                    JSONObject responsePacket = new JSONObject();
+                    responsePacket.put("type", "ping");
+                    responsePacket.put("deviceName", getDeviceName());
+                    receivedPacket.put("ipAddress", getLocalIpAddress());
+                    responsePacket.put("port", serverSocket.getLocalPort());
+                    out.println(responsePacket);
+                    break;
+
+                default:
+                    LOGGER.log(Level.SEVERE, "Server.handleConnection: unknown packet type");
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Server.handleConnection: error handling connection");
         }
     }
 
@@ -80,6 +92,10 @@ public class Server {
 
     private static String getRemoteSocketAddress(Socket socket) {
         return socket.getRemoteSocketAddress().toString().replace("/","");
+    }
+
+    private String getDeviceName() throws UnknownHostException {
+        return InetAddress.getLocalHost().getHostName();
     }
 
     public static void main(String[] args) {

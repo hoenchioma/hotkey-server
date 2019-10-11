@@ -1,5 +1,6 @@
 package com.rfw.hotkey_server.util;
 
+import com.rfw.hotkey_server.net.ConnectionHandler;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -12,24 +13,30 @@ import java.util.logging.Logger;
 public class PacketHandler {
     private static final Logger LOGGER = Logger.getLogger(PacketHandler.class.getName());
 
+    public PacketHandler(ConnectionHandler connectionHandler) {
+        this.connectionHandler = connectionHandler;
+    }
+
+    private ConnectionHandler connectionHandler;
+
     private KeyboardController keyboardController = new KeyboardController();
     private MouseController mouseController = new MouseController();
     private PowerPointController powerPointController = new PowerPointController();
+
     public void handle(JSONObject packet) {
         String packetType = packet.getString("type");
         switch (packetType) {
             case "keyboard":
                 keyboardController.handleIncomingPacket(packet);
                 break;
-            // TODO: handle other types of packets
             case "mouse":
                 mouseController.handleIncomingPacket(packet);
                 break;
-            case  "ppt" :
+            case "ppt":
                 powerPointController.handleIncomingPacket(packet);
                 break;
             default:
-                LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type "+ packetType);
+                LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type " + packetType);
         }
     }
 

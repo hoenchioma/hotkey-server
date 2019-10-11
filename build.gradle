@@ -24,4 +24,4 @@ dependencies {
     compile group: 'org.json', name: 'json', version: '20190722'
 }
 
-mainClassName = "com.rfw.hotkey_server.Main"
+mainClassName = "com.rfw.hotkey_server.net.Server"
