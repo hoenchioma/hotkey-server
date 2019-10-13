@@ -21,6 +21,10 @@ public class Server {
         serverSocket = new ServerSocket(port);
     }
 
+    private Server() throws IOException {
+        serverSocket = new ServerSocket(0);
+    }
+
     private void startServer() throws IOException {
         System.out.println("Starting server ...");
         System.out.printf("IP Address: %s\nPort: %d\n", getLocalIpAddress(), serverSocket.getLocalPort());
@@ -100,8 +104,13 @@ public class Server {
 
     public static void main(String[] args) {
         try {
-            int port = 1234;
-            Server server = new Server(port);
+            Server server;
+            if (args.length >= 1) {
+                int port = Integer.parseInt(args[0]);
+                server = new Server(port);
+            } else { // if no port specified bind server to any available port
+                server = new Server();
+            }
 
             try {
                 server.startServer();
