@@ -94,7 +94,7 @@ public class Server {
         return null;
     }
 
-    private static String getRemoteSocketAddress(Socket socket) {
+    public static String getRemoteSocketAddress(Socket socket) {
         return socket.getRemoteSocketAddress().toString().replace("/","");
     }
 

@@ -32,6 +32,10 @@ public class ConnectionHandler extends Thread {
         this.packetHandler = new PacketHandler(this);
     }
 
+    public Socket getSocket() {
+        return socket;
+    }
+
     @Override
     public void run() {
         while (!stop && socket.isConnected()) {
