@@ -1,6 +1,6 @@
-package com.rfw.hotkey_server.util;
+package com.rfw.hotkey_server.net;
 
-import com.rfw.hotkey_server.net.ConnectionHandler;
+import com.rfw.hotkey_server.control.*;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -51,5 +51,9 @@ public class PacketHandler {
     public void handle(String message) {
 //        LOGGER.log(Level.INFO, "PacketHandler.handle: " + message);
         handle(new JSONObject(new JSONTokener(message)));
+    }
+
+    public void exit() {
+        liveScreenController.stop();
     }
 }

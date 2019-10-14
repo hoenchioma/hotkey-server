@@ -11,6 +11,8 @@ import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.rfw.hotkey_server.util.Utils.*;
+
 public class Server {
     private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
 
@@ -55,7 +57,7 @@ public class Server {
                             out.println(responsePacket);
 
                             new ConnectionHandler(socket, in, out, clientName, this).start();
-                            System.out.printf("Connected to %s [%s]\n", clientName, getRemoteSocketAddress(socket));
+                            System.out.printf("Connected to %s [%s]\n", clientName, getRemoteSocketAddressAndPort(socket));
                             System.out.println("Handler Type: normal");
 
                             break;
@@ -80,26 +82,6 @@ public class Server {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Server.handleConnection: error handling connection");
         }
-    }
-
-    /** helper methods **/
-
-    private static String getLocalIpAddress() {
-        try (final DatagramSocket socket = new DatagramSocket()) {
-            socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
-            return socket.getLocalAddress().getHostAddress();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Server.getLocalIpAddress: error getting local IP address");
-        }
-        return null;
-    }
-
-    public static String getRemoteSocketAddress(Socket socket) {
-        return socket.getRemoteSocketAddress().toString().replace("/","");
-    }
-
-    private String getDeviceName() throws UnknownHostException {
-        return InetAddress.getLocalHost().getHostName();
     }
 
     public static void main(String[] args) {

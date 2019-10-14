@@ -1,4 +1,4 @@
-package com.rfw.hotkey_server.util;
+package com.rfw.hotkey_server.control;
 
 import org.json.JSONObject;
 
@@ -12,7 +12,8 @@ public class PDFController {
 
     private static final Logger LOGGER = Logger.getLogger(PowerPointController.class.getName());
     private Robot robot;
-    PDFController(){
+
+    public PDFController() {
         try {
             robot = new Robot();
         } catch (Exception e) {
@@ -20,6 +21,7 @@ public class PDFController {
             JOptionPane.showMessageDialog(null, "Error Occurred!");
         }
     }
+
     public void keyPress(int keyCode) {
         robot.keyPress(keyCode);
     }
@@ -36,7 +38,7 @@ public class PDFController {
 
     public void pressModifierButton(String keyword) {
         switch (keyword) {
-            case "fit_w" :
+            case "fit_w":
                 keyPress(KeyEvent.VK_CONTROL);
                 keyPress(KeyEvent.VK_2);
                 robot.delay(10);
@@ -44,7 +46,7 @@ public class PDFController {
                 keyRelease(KeyEvent.VK_CONTROL);
 
                 break;
-            case "fit_h" :
+            case "fit_h":
                 keyPress(KeyEvent.VK_CONTROL);
                 keyPress(KeyEvent.VK_1);
                 robot.delay(10);
@@ -52,7 +54,7 @@ public class PDFController {
                 keyRelease(KeyEvent.VK_CONTROL);
 
                 break;
-            case "zoom_in" :
+            case "zoom_in":
                 keyPress(KeyEvent.VK_CONTROL);
                 keyPress(KeyEvent.VK_EQUALS);
                 robot.delay(10);
@@ -60,7 +62,7 @@ public class PDFController {
                 keyRelease(KeyEvent.VK_CONTROL);
 
                 break;
-            case "zoom_out" :
+            case "zoom_out":
                 keyPress(KeyEvent.VK_CONTROL);
                 keyPress(KeyEvent.VK_MINUS);
                 robot.delay(10);
@@ -68,7 +70,7 @@ public class PDFController {
                 keyRelease(KeyEvent.VK_CONTROL);
 
                 break;
-            case "fullscreen" :
+            case "fullscreen":
                 keyPress(KeyEvent.VK_CONTROL);
                 keyPress(KeyEvent.VK_L);
                 robot.delay(10);
@@ -76,7 +78,7 @@ public class PDFController {
                 keyRelease(KeyEvent.VK_CONTROL);
 
                 break;
-            case "ESC" :
+            case "ESC":
                 type(KeyEvent.VK_ESCAPE);
                 break;
             case "UP":
@@ -94,7 +96,8 @@ public class PDFController {
 
         }
     }
-    public void gotoPage(String number){
+
+    public void gotoPage(String number) {
         keyPress(KeyEvent.VK_SHIFT);
         keyPress(KeyEvent.VK_CONTROL);
         keyPress(KeyEvent.VK_N);
@@ -103,26 +106,27 @@ public class PDFController {
         keyRelease(KeyEvent.VK_CONTROL);
         keyRelease(KeyEvent.VK_N);
 
-        for(int i=0;i<number.length();i++){
-            keyPress((int)number.charAt(i));
+        for (int i = 0; i < number.length(); i++) {
+            keyPress((int) number.charAt(i));
             robot.delay(10);
-            keyRelease((int)number.charAt(i));
+            keyRelease((int) number.charAt(i));
         }
         keyPress(KeyEvent.VK_ENTER);
         robot.delay(30);
         keyRelease(KeyEvent.VK_ENTER);
     }
+
     public void handleIncomingPacket(JSONObject packet) {
         String action = packet.getString("action");
         switch (action) {
 
-            case "modifier" :
+            case "modifier":
                 pressModifierButton(packet.getString("key"));
                 break;
             case "page":
                 gotoPage(packet.getString("key"));
                 break;
-                // TODO: (Wadith) implement other actions
+            // TODO: (Wadith) implement other actions
             default:
                 LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action");
         }

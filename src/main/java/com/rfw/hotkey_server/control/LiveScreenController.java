@@ -1,27 +1,25 @@
-package com.rfw.hotkey_server.util;
+package com.rfw.hotkey_server.control;
 
 import org.imgscalr.Scalr;
 import org.json.JSONObject;
 
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.rfw.hotkey_server.util.Utils.compressToJPEG;
+
 public class LiveScreenController {
     private static final Logger LOGGER = Logger.getLogger(LiveScreenController.class.getName());
 
+    public static final float JPEG_COMPRESSION_QUALITY = 0.22f;
+
     private Robot robot;
 
-    LiveScreenSender liveScreenSender;
+    private LiveScreenSender liveScreenSender;
 
     public LiveScreenController() {
         try {
@@ -32,7 +30,13 @@ public class LiveScreenController {
         }
     }
 
-    void handleIncomingPacket(JSONObject packet) {
+    public void stop() {
+        if (liveScreenSender != null) {
+            liveScreenSender.running = false;
+        }
+    }
+
+    public void handleIncomingPacket(JSONObject packet) {
         switch (packet.getString("command")) {
             case "start":
                 String ipAddress = packet.getString("ipAddress");
@@ -90,20 +94,18 @@ public class LiveScreenController {
 //                    LOGGER.log(Level.INFO, "LiveScreenSender.run: " + screenSizeX + " " + screenSizeY);
                     BufferedImage resizedSS = Scalr.resize(screenshot,
                             Scalr.Method.BALANCED, screenSizeX, screenSizeY);
-                    byte[] imageBuff = compressToJPEG(resizedSS, 0.22f);
+                    byte[] imageBuff = compressToJPEG(resizedSS, JPEG_COMPRESSION_QUALITY);
+
+//                    LOGGER.log(Level.INFO, "LiveScreenSender.run: image size: " + imageBuff.length);
 
                     // TODO: fix message too long problem
 
-//                    LOGGER.log(Level.INFO, "LiveScreenSender.run: image size: " + imageBuff.length);
-//                    intToByteArray(25, sendBuff, 0);
-
                     DatagramPacket packet = new DatagramPacket(imageBuff, imageBuff.length, address, port);
-//                    DatagramPacket packet = new DatagramPacket(sendBuff, 4, address, port);
                     socket.send(packet);
                 } catch (IOException e) {
                     LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error while sending screenshot");
                     e.printStackTrace();
-                    break;
+//                    break;
                 }
             }
             try {
@@ -114,40 +116,7 @@ public class LiveScreenController {
                 LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error sending good byte package");
                 e.printStackTrace();
             }
+            running = false;
         }
-    }
-
-    private static void intToByteArray(int value, byte[] res, int offset) {
-        res[offset] = (byte)(value >> 24);
-        res[offset + 1] = (byte)(value >> 16);
-        res[offset + 2] = (byte)(value >> 8);
-        res[offset + 3] = (byte)value;
-    }
-
-    private static int intFromByteArray(byte[] bytes, int offset) {
-        return bytes[offset] << 24
-                | (bytes[offset + 1] & 0xFF) << 16
-                | (bytes[offset + 2] & 0xFF) << 8
-                | (bytes[offset + 3] & 0xFF);
-    }
-
-    private byte[] compressToJPEG(BufferedImage image, float quality) throws IOException {
-        ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ImageOutputStream ios = ImageIO.createImageOutputStream(out);
-        writer.setOutput(ios);
-
-        ImageWriteParam param = writer.getDefaultWriteParam();
-
-        // compress to a given quality
-        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-        param.setCompressionQuality(quality);
-
-        writer.write(null, new IIOImage(image, null, null), param);
-
-        ios.close();
-        writer.dispose();
-
-        return out.toByteArray();
     }
 }

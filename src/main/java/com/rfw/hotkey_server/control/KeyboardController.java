@@ -1,4 +1,4 @@
-package com.rfw.hotkey_server.util;
+package com.rfw.hotkey_server.control;
 
 import org.json.JSONObject;
 

@@ -1,6 +1,5 @@
 package com.rfw.hotkey_server.net;
 
-import com.rfw.hotkey_server.util.PacketHandler;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -48,6 +47,7 @@ public class ConnectionHandler extends Thread {
                 handleMessage(line);
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "ConnectionHandler.run: IO error closing connection");
+                exit();
                 break;
             }
         }
@@ -59,5 +59,10 @@ public class ConnectionHandler extends Thread {
 
     public void sendPacket(JSONObject packet) {
         out.println(packet);
+    }
+
+    public void exit() {
+        stop = true;
+        packetHandler.exit();
     }
 }
