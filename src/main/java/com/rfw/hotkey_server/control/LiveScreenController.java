@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.logging.Level;
@@ -15,7 +16,8 @@ import static com.rfw.hotkey_server.util.Utils.compressToJPEG;
 public class LiveScreenController {
     private static final Logger LOGGER = Logger.getLogger(LiveScreenController.class.getName());
 
-    public static final float JPEG_COMPRESSION_QUALITY = 0.22f;
+    public static final int CONNECTION_TIMEOUT = 5000;
+    public static final float JPEG_COMPRESSION_QUALITY = 0.25f;
 
     private Robot robot;
 
@@ -43,10 +45,13 @@ public class LiveScreenController {
                 int port = packet.getInt("port");
                 int screenSizeX = packet.getInt("screenSizeX");
                 int screenSizeY = packet.getInt("screenSizeY");
+                float targetFps = packet.getFloat("fps");
                 try {
-                    liveScreenSender = new LiveScreenSender(ipAddress, port, screenSizeX, screenSizeY);
+                    liveScreenSender = new LiveScreenSender(ipAddress, port, screenSizeX, screenSizeY, targetFps);
                     liveScreenSender.start();
-                } catch (SocketException | UnknownHostException e) {
+                } catch (SocketTimeoutException e) {
+                    LOGGER.log(Level.SEVERE, "LiveScreenController.handleIncomingPacket: socket connection timed out");
+                } catch (IOException e) {
                     LOGGER.log(Level.SEVERE, "LiveScreenController.handleIncomingPacket: error starting LiveScreenSender");
                     e.printStackTrace();
                 }
@@ -62,26 +67,40 @@ public class LiveScreenController {
     }
 
     private class LiveScreenSender extends Thread {
-        DatagramSocket socket;
-        InetAddress address;
+        Socket socket;
+        DataOutputStream out;
+
+        String ipAddress;
         int port;
         int screenSizeX, screenSizeY;
 
+        float targetFps;
+
         volatile boolean running = false;
 
-        public LiveScreenSender(String ipAddress, int port, int screenSizeX, int screenSizeY)
-                throws SocketException, UnknownHostException {
-            this.socket = new DatagramSocket();
-            this.address = InetAddress.getByName(ipAddress);
+        public LiveScreenSender(String ipAddress, int port, int screenSizeX, int screenSizeY, float targetFps)
+                throws IOException {
+            this.ipAddress = ipAddress;
             this.port = port;
             this.screenSizeX = screenSizeX;
             this.screenSizeY = screenSizeY;
+            this.targetFps = targetFps;
+
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(ipAddress, port), CONNECTION_TIMEOUT);
+            out = new DataOutputStream(socket.getOutputStream());
         }
 
         @Override
         public synchronized void start() {
             running = true;
             super.start();
+        }
+        
+        private void exit() throws IOException {
+            running = false;
+            out.close();
+            socket.close();
         }
 
         @Override
@@ -98,25 +117,33 @@ public class LiveScreenController {
 
 //                    LOGGER.log(Level.INFO, "LiveScreenSender.run: image size: " + imageBuff.length);
 
-                    // TODO: fix message too long problem
-
-                    DatagramPacket packet = new DatagramPacket(imageBuff, imageBuff.length, address, port);
-                    socket.send(packet);
+                    out.writeInt(imageBuff.length);
+                    out.write(imageBuff);
                 } catch (IOException e) {
                     LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error while sending screenshot");
+                    LOGGER.log(Level.INFO, "LiveScreenSender.run: exiting sender ...");
                     e.printStackTrace();
-//                    break;
+                    break;
                 }
+//                try {
+//                    Thread.sleep((int) (1000.0 / targetFps));
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
             }
             try {
                 // send good byte package (to signal client to stop receiving)
-                DatagramPacket packet = new DatagramPacket(new byte[0], 0, address, port); // byte buff of 0 size
-                socket.send(packet);
+                out.writeInt(0);
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error sending good byte package");
                 e.printStackTrace();
             }
-            running = false;
+            try {
+                exit();
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error exiting");
+                e.printStackTrace();
+            }
         }
     }
 }
