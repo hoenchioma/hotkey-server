@@ -31,8 +31,9 @@ public class ConnectionHandler extends Thread {
         this.packetHandler = new PacketHandler(this);
     }
 
-    public Socket getSocket() {
-        return socket;
+    private void exit() {
+        stop = true;
+        packetHandler.exit();
     }
 
     @Override
@@ -47,10 +48,10 @@ public class ConnectionHandler extends Thread {
                 handleMessage(line);
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "ConnectionHandler.run: IO error closing connection");
-                exit();
                 break;
             }
         }
+        exit();
     }
 
     private void handleMessage(String message) {
@@ -59,10 +60,5 @@ public class ConnectionHandler extends Thread {
 
     public void sendPacket(JSONObject packet) {
         out.println(packet);
-    }
-
-    public void exit() {
-        stop = true;
-        packetHandler.exit();
     }
 }

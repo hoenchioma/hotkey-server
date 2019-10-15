@@ -62,6 +62,19 @@ public final class Utils {
     }
 
     /**
+     * Convert int to byte array
+     * @param value int to be converted
+     * @return required byte array
+     */
+    public static byte[] intToByteArray(int value) {
+        return new byte[] {
+                (byte)(value >> 24),
+                (byte)(value >> 16),
+                (byte)(value >> 8),
+                (byte)value};
+    }
+
+    /**
      * Convert byte array to int
      * @param bytes byte arr to be converted
      * @param offset offset for bytes (where in bytes is the input located)
@@ -96,6 +109,12 @@ public final class Utils {
         ios.close();
         writer.dispose();
 
+        return out.toByteArray();
+    }
+
+    public static byte[] getPNG(BufferedImage image) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", out);
         return out.toByteArray();
     }
 }

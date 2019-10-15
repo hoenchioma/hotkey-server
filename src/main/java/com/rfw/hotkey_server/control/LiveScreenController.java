@@ -7,17 +7,19 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.rfw.hotkey_server.util.Utils.compressToJPEG;
+import static com.rfw.hotkey_server.util.Utils.getPNG;
 
 public class LiveScreenController {
     private static final Logger LOGGER = Logger.getLogger(LiveScreenController.class.getName());
 
-    public static final int CONNECTION_TIMEOUT = 5000;
-    public static final float JPEG_COMPRESSION_QUALITY = 0.25f;
+    private static final int CONNECTION_TIMEOUT = 1000;
 
     private Robot robot;
 
@@ -46,8 +48,11 @@ public class LiveScreenController {
                 int screenSizeX = packet.getInt("screenSizeX");
                 int screenSizeY = packet.getInt("screenSizeY");
                 float targetFps = packet.getFloat("fps");
+                float compressRatio = packet.getFloat("compressRatio");
                 try {
-                    liveScreenSender = new LiveScreenSender(ipAddress, port, screenSizeX, screenSizeY, targetFps);
+                    Socket socket = new Socket();
+                    socket.connect(new InetSocketAddress(ipAddress, port), CONNECTION_TIMEOUT);
+                    liveScreenSender = new LiveScreenSender(socket, screenSizeX, screenSizeY, targetFps, compressRatio);
                     liveScreenSender.start();
                 } catch (SocketTimeoutException e) {
                     LOGGER.log(Level.SEVERE, "LiveScreenController.handleIncomingPacket: socket connection timed out");
@@ -70,25 +75,23 @@ public class LiveScreenController {
         Socket socket;
         DataOutputStream out;
 
-        String ipAddress;
-        int port;
         int screenSizeX, screenSizeY;
-
-        float targetFps;
+        float fps;
+        float compressRatio;
 
         volatile boolean running = false;
 
-        public LiveScreenSender(String ipAddress, int port, int screenSizeX, int screenSizeY, float targetFps)
+        LiveScreenSender(Socket socket,
+                         int screenSizeX, int screenSizeY,
+                         float fps, float compressRatio)
                 throws IOException {
-            this.ipAddress = ipAddress;
-            this.port = port;
+
             this.screenSizeX = screenSizeX;
             this.screenSizeY = screenSizeY;
-            this.targetFps = targetFps;
+            this.fps = fps;
+            this.compressRatio = compressRatio;
 
-            socket = new Socket();
-            socket.connect(new InetSocketAddress(ipAddress, port), CONNECTION_TIMEOUT);
-            out = new DataOutputStream(socket.getOutputStream());
+            this.out = new DataOutputStream(socket.getOutputStream());
         }
 
         @Override
@@ -96,7 +99,7 @@ public class LiveScreenController {
             running = true;
             super.start();
         }
-        
+
         private void exit() throws IOException {
             running = false;
             out.close();
@@ -109,27 +112,28 @@ public class LiveScreenController {
                 try {
                     BufferedImage screenshot = robot.createScreenCapture(
                             new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
-//                    LOGGER.log(Level.INFO, "LiveScreenSender.run: " + screenshot.getWidth() + " " + screenshot.getHeight());
-//                    LOGGER.log(Level.INFO, "LiveScreenSender.run: " + screenSizeX + " " + screenSizeY);
                     BufferedImage resizedSS = Scalr.resize(screenshot,
                             Scalr.Method.BALANCED, screenSizeX, screenSizeY);
-                    byte[] imageBuff = compressToJPEG(resizedSS, JPEG_COMPRESSION_QUALITY);
+                    byte[] imageBuff = compressRatio == 1.0f ? getPNG(resizedSS) : compressToJPEG(resizedSS, compressRatio);
 
-//                    LOGGER.log(Level.INFO, "LiveScreenSender.run: image size: " + imageBuff.length);
+//                    LOGGER.log(Level.INFO, "LiveScreenSender.run: image size: " + imageBuff.length + " " + (int) imageBuff.length);
 
                     out.writeInt(imageBuff.length);
+                    out.flush();
                     out.write(imageBuff);
+                    out.flush();
+
                 } catch (IOException e) {
                     LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error while sending screenshot");
                     LOGGER.log(Level.INFO, "LiveScreenSender.run: exiting sender ...");
                     e.printStackTrace();
                     break;
                 }
-//                try {
-//                    Thread.sleep((int) (1000.0 / targetFps));
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    Thread.sleep((int) (1000.0 / fps));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             try {
                 // send good byte package (to signal client to stop receiving)
