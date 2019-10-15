@@ -102,8 +102,8 @@ public class LiveScreenController {
 
         private void exit() throws IOException {
             running = false;
-            out.close();
-            socket.close();
+            if (out != null) out.close();
+            if (socket != null) socket.close();
         }
 
         @Override
