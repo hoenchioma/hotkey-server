@@ -124,9 +124,11 @@ public class LiveScreenController {
                     out.flush();
 
                 } catch (IOException e) {
-                    LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error while sending screenshot");
+                    if (running) { // if client is supposed to be disconnected don't show error
+                        LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error while sending screenshot");
+                        e.printStackTrace();
+                    }
                     LOGGER.log(Level.INFO, "LiveScreenSender.run: exiting sender ...");
-                    e.printStackTrace();
                     break;
                 }
                 try {
@@ -135,13 +137,13 @@ public class LiveScreenController {
                     e.printStackTrace();
                 }
             }
-            try {
-                // send good byte package (to signal client to stop receiving)
-                out.writeInt(0);
-            } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error sending good byte package");
-                e.printStackTrace();
-            }
+//            try {
+//                // send good byte package (to signal client to stop receiving)
+//                out.writeInt(0);
+//            } catch (IOException e) {
+//                LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error sending good byte package");
+//                e.printStackTrace();
+//            }
             try {
                 exit();
             } catch (IOException e) {
