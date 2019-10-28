@@ -1,7 +1,5 @@
 package com.rfw.hotkey_server.net;
 
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import net.glxn.qrgen.core.image.ImageType;
 import net.glxn.qrgen.javase.QRCode;
 import org.json.JSONObject;
@@ -9,7 +7,8 @@ import org.json.JSONTokener;
 
 import javax.swing.*;
 import java.io.*;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
