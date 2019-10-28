@@ -6,12 +6,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 
 public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("scene.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("HomeScreenView.fxml"));
 
         Scene scene = new Scene(root);
 //        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
@@ -19,7 +21,9 @@ public class Main extends Application {
         stage.setTitle("Hotkey Server");
         stage.setScene(scene);
         stage.show();
+        stage.setResizable(false);
     }
+
 
     public static void main(String[] args) {
         launch(args);

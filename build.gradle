@@ -15,7 +15,7 @@ repositories {
 
 javafx {
     version = "12.0.2"
-    modules = [ 'javafx.controls', 'javafx.fxml' ]
+    modules = [ 'javafx.controls', 'javafx.fxml' , 'javafx.graphics', 'javafx.media', 'javafx.swing', 'javafx.web']
 }
 
 dependencies {
@@ -23,6 +23,8 @@ dependencies {
 
     compile group: 'org.json', name: 'json', version: '20190722'
     compile group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2'
+    // https://mvnrepository.com/artifact/com.jfoenix/jfoenix
+    compile group: 'com.jfoenix', name: 'jfoenix', version: '9.0.1'
 }
 
 mainClassName = "com.rfw.hotkey_server.net.Server"

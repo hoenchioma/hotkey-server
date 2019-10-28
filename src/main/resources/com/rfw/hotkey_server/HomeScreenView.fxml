@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="454.0" prefWidth="409.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rfw.hotkey_server.HomeScreenController">
+   <children>
+      <VBox layoutX="-5.0" layoutY="-2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="463.0" prefWidth="416.0">
+         <children>
+            <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="116.0" prefWidth="411.0">
+               <children>
+                  <Label alignment="CENTER" layoutX="102.0" prefHeight="72.0" prefWidth="177.0" text=" HOTKEY" textAlignment="CENTER" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="27.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </padding>
+                  </Label>
+                  <JFXButton fx:id="settingButtonID" buttonType="RAISED" layoutX="345.0" layoutY="12.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="42.0" prefWidth="46.0" ripplerFill="BLACK" style="-fx-background-color: #a9adb8; -fx-background-radius: 80;" text=" ">
+                     <graphic>
+                        <ImageView fitHeight="31.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../settingIcon.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
+               </children>
+            </AnchorPane>
+            <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="78.0" prefWidth="415.0" style="-fx-background-color: #7289da;" />
+            <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="281.0" prefWidth="418.0">
+               <children>
+                  <Label layoutX="21.0" layoutY="41.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="52.0" text="Status" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="21.0" layoutY="71.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="106.0" text="Connected Device" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="21.0" layoutY="101.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="80.0" text="IP Address" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="21.0" layoutY="131.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="80.0" text="Port" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="21.0" layoutY="161.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="106.0" text="Connection Type" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="150.0" layoutY="41.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="9.0" text=":" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="150.0" layoutY="71.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="9.0" text=":" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="150.0" layoutY="101.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="9.0" text=":" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="150.0" layoutY="131.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="9.0" text=":" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="150.0" layoutY="161.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="9.0" text=":" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="statusLebelID" layoutX="170.0" layoutY="41.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="198.0" text="Offline" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="connectedDeviceLebelID" layoutX="170.0" layoutY="71.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="198.0" text="Null" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="IPLebelID" layoutX="170.0" layoutY="101.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="198.0" text="Null" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="portLebelID" layoutX="170.0" layoutY="131.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="198.0" text="Null" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="connectionTypeLebelID" layoutX="170.0" layoutY="161.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="198.0" text="Null" textFill="WHITE">
+                     <font>
+                        <Font name="SansSerif Regular" size="13.0" />
+                     </font>
+                  </Label>
+                  <JFXButton layoutX="25.0" layoutY="195.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="123.0" ripplerFill="BLACK" style="-fx-background-color: #7289da; -fx-background-radius: 10;" text="Generate QR Code" textFill="WHITE" />
+               </children>
+            </AnchorPane>
+         </children>
+      </VBox>
+      <VBox layoutX="-5.0" layoutY="78.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="143.0" prefWidth="418.0">
+         <children>
+            <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="154.0" prefWidth="418.0">
+               <children>
+                  <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="115.0" prefWidth="114.0" style="-fx-background-color: #2c2f33; -fx-background-radius: 100;">
+                     <effect>
+                        <DropShadow />
+                     </effect>
+                  </VBox>
+                  <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="83.0" prefWidth="81.0" style="-fx-background-color: white; -fx-background-radius: 100;">
+                     <effect>
+                        <DropShadow />
+                     </effect>
+                     <children>
+                        <JFXButton fx:id="startButtonID" buttonType="RAISED" onAction="#startButtonAction" prefHeight="111.0" prefWidth="126.0" ripplerFill="BLACK" style="-fx-background-color: #7289da; -fx-background-radius: 100;" text="Start" textFill="WHITE">
+                           <font>
+                              <Font name="Rockwell" size="21.0" />
+                           </font>
+                        </JFXButton>
+                     </children>
+                  </VBox>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </StackPane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
