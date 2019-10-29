@@ -36,23 +36,40 @@ public class PDFController {
         keyRelease(keyCode);
     }
 
-    public void pressModifierButton(String keyword) {
+    /**
+     * platform == 1 means Adobe Acrobat Reader Command
+     * platform == 2 means Evince PDF Reader Command
+     * @param keyword
+     * @param platform
+     */
+    public void pressModifierButton(String keyword,String platform) {
         switch (keyword) {
             case "fit_w":
-                keyPress(KeyEvent.VK_CONTROL);
-                keyPress(KeyEvent.VK_2);
-                robot.delay(10);
-                keyRelease(KeyEvent.VK_2);
-                keyRelease(KeyEvent.VK_CONTROL);
+                if(platform.equals("1")){
+                    keyPress(KeyEvent.VK_CONTROL);
+                    keyPress(KeyEvent.VK_2);
+                    robot.delay(10);
+                    keyRelease(KeyEvent.VK_2);
+                    keyRelease(KeyEvent.VK_CONTROL);
+                }
+                else if(platform.equals("2")){
+                    type(KeyEvent.VK_W);
+                }
+
 
                 break;
             case "fit_h":
-                keyPress(KeyEvent.VK_CONTROL);
-                keyPress(KeyEvent.VK_1);
-                robot.delay(10);
-                keyRelease(KeyEvent.VK_1);
-                keyRelease(KeyEvent.VK_CONTROL);
-
+                if(platform.equals("1") ) {
+                    LOGGER.log(Level.SEVERE,"Fit_h");
+                    keyPress(KeyEvent.VK_CONTROL);
+                    keyPress(KeyEvent.VK_1);
+                    robot.delay(10);
+                    keyRelease(KeyEvent.VK_1);
+                    keyRelease(KeyEvent.VK_CONTROL);
+                }
+                else if(platform.equals("2")) {
+                    type(KeyEvent.VK_F);
+                }
                 break;
             case "zoom_in":
                 keyPress(KeyEvent.VK_CONTROL);
@@ -71,12 +88,16 @@ public class PDFController {
 
                 break;
             case "fullscreen":
-                keyPress(KeyEvent.VK_CONTROL);
-                keyPress(KeyEvent.VK_L);
-                robot.delay(10);
-                keyRelease(KeyEvent.VK_L);
-                keyRelease(KeyEvent.VK_CONTROL);
-
+                if(platform.equals("1")) {
+                    keyPress(KeyEvent.VK_CONTROL);
+                    keyPress(KeyEvent.VK_L);
+                    robot.delay(10);
+                    keyRelease(KeyEvent.VK_L);
+                    keyRelease(KeyEvent.VK_CONTROL);
+                }
+                else if(platform.equals("2")){
+                    type(KeyEvent.VK_F5);
+                }
                 break;
             case "ESC":
                 type(KeyEvent.VK_ESCAPE);
@@ -97,15 +118,25 @@ public class PDFController {
         }
     }
 
-    public void gotoPage(String number) {
-        keyPress(KeyEvent.VK_SHIFT);
-        keyPress(KeyEvent.VK_CONTROL);
-        keyPress(KeyEvent.VK_N);
-        robot.delay(20);
-        keyRelease(KeyEvent.VK_SHIFT);
-        keyRelease(KeyEvent.VK_CONTROL);
-        keyRelease(KeyEvent.VK_N);
+    public void gotoPage(String number,String platform) {
+        if(platform == "1") {
 
+            keyPress(KeyEvent.VK_SHIFT);
+            keyPress(KeyEvent.VK_CONTROL);
+            keyPress(KeyEvent.VK_N);
+            robot.delay(20);
+            keyRelease(KeyEvent.VK_SHIFT);
+            keyRelease(KeyEvent.VK_CONTROL);
+            keyRelease(KeyEvent.VK_N);
+        }
+        else if(platform == "2"){
+            keyPress(KeyEvent.VK_CONTROL);
+            keyPress(KeyEvent.VK_L);
+            robot.delay(20);
+            keyRelease(KeyEvent.VK_CONTROL);
+            keyRelease(KeyEvent.VK_L);
+
+        }
         for (int i = 0; i < number.length(); i++) {
             keyPress((int) number.charAt(i));
             robot.delay(10);
@@ -118,13 +149,17 @@ public class PDFController {
 
     public void handleIncomingPacket(JSONObject packet) {
         String action = packet.getString("action");
+        String key = packet.getString("key");
+        String platform = packet.getString("platform");
         switch (action) {
 
             case "modifier":
-                pressModifierButton(packet.getString("key"));
+                pressModifierButton(key,platform);
+                //LOGGER.log(Level.SEVERE,key);
+                //LOGGER.log(Level.SEVERE,platform);
                 break;
             case "page":
-                gotoPage(packet.getString("key"));
+                gotoPage(key,platform);
                 break;
             // TODO: (Wadith) implement other actions
             default:
