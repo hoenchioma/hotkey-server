@@ -1,13 +1,14 @@
 package com.rfw.hotkey_server.net;
 
+import net.glxn.qrgen.core.image.ImageType;
+import net.glxn.qrgen.javase.QRCode;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.*;
+import javax.swing.*;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +32,8 @@ public class Server {
         System.out.println("Starting server ...");
         System.out.printf("IP Address: %s\nPort: %d\n", getLocalIpAddress(), serverSocket.getLocalPort());
         System.out.println();
+
+        new Thread(() -> generateQRCode(getLocalIpAddress(), serverSocket.getLocalPort())).start();
 
         while (!stop) {
             Socket socket = serverSocket.accept();
@@ -82,6 +85,25 @@ public class Server {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Server.handleConnection: error handling connection");
         }
+    }
+
+    private void generateQRCode(String ipAddress, int port) {
+        JSONObject code = new JSONObject();
+        code.put("type", "serverInfo");
+        code.put("ipAddress", ipAddress);
+        code.put("port", port);
+
+        ByteArrayOutputStream stream = QRCode.from(code.toString()).to(ImageType.JPG).withSize(500, 500).stream();
+        byte[] bytes = stream.toByteArray();
+        ImageIcon icon = new ImageIcon(bytes);
+
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel(icon);
+        frame.add(label);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     public static void main(String[] args) {
