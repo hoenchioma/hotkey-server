@@ -44,7 +44,7 @@ public class PacketHandler {
                 liveScreenController.handleIncomingPacket(packet);
                 break;
             default:
-                LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type " + packetType);
+                LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type " + packetType + "\n");
         }
     }
 

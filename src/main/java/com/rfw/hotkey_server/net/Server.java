@@ -2,6 +2,7 @@ package com.rfw.hotkey_server.net;
 
 import net.glxn.qrgen.core.image.ImageType;
 import net.glxn.qrgen.javase.QRCode;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -27,14 +28,27 @@ public class Server {
     private Server() throws IOException {
         serverSocket = new ServerSocket(0);
     }
+    
+    public void stop() {
+        stop = true;
+    }
+    
+    public int getLocalPort() {
+        return serverSocket.getLocalPort();
+    }
 
     private void startServer() throws IOException {
-        System.out.println("Starting server ...");
-        System.out.printf("IP Address: %s\nPort: %d\n", getLocalIpAddress(), serverSocket.getLocalPort());
-        System.out.println();
+        LOGGER.log(Level.INFO, "Server.startServer: " + String.format(
+                "Server started \nIP Address: %s\nPort: %d\n",
+                getLocalIpAddress(), getLocalPort()
+        ));
 
-        new Thread(() -> generateQRCode(getLocalIpAddress(), serverSocket.getLocalPort())).start();
+        new Thread(this::generateQRCode).start(); // generate a qr code in a different thread
 
+        connectionHandlingLoop();
+    }
+
+    private void connectionHandlingLoop() throws IOException {
         while (!stop) {
             Socket socket = serverSocket.accept();
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -48,50 +62,61 @@ public class Server {
         try {
             String message = in.readLine();
             JSONObject receivedPacket = new JSONObject(new JSONTokener(message));
+            String packetType = receivedPacket.getString("type");
 
-            switch (receivedPacket.getString("type")) {
-                case "handshake": // connection request
+            switch (packetType) {
+                case "connectionRequest":
                     String clientName = receivedPacket.getString("deviceName");
-                    switch (receivedPacket.getString("connectionType")) {
+                    String connectionType = receivedPacket.getString("connectionType");
+                    switch (connectionType) {
                         case "normal":
                             JSONObject responsePacket = new JSONObject();
-                            responsePacket.put("type", "handshake");
+                            responsePacket.put("type", "connectionResponse");
                             responsePacket.put("deviceName", getDeviceName());
-                            out.println(responsePacket);
 
-                            new ConnectionHandler(socket, in, out, clientName, this).start();
-                            System.out.printf("Connected to %s [%s]\n", clientName, getRemoteSocketAddressAndPort(socket));
-                            System.out.println("Handler Type: normal");
+                            try {
+                                new ConnectionHandler(socket, in, out, clientName, this).start();
+                                LOGGER.log(Level.INFO, "Server.handleConnection: " + String.format(
+                                        "Connected to %s [%s]\n", clientName, getRemoteSocketAddressAndPort(socket)
+                                ));
+                                responsePacket.put("success", true);
+                            } catch (Exception e) {
+                                LOGGER.log(Level.SEVERE, "Server.handleConnection: " + String.format(
+                                        "failed to start connection\n[%s, %s]\n",
+                                        clientName,
+                                        getRemoteSocketAddressAndPort(socket)
+                                ));
+                                responsePacket.put("success", false);
+                            }
+
+                            out.println(responsePacket);
 
                             break;
 
                         default:
-                            LOGGER.log(Level.SEVERE, "Server.handleConnection: unknown connection type requested");
+                            LOGGER.log(Level.SEVERE, "Server.handleConnection: " + String.format("unknown connection type (%s)\n", connectionType));
                     }
                     break;
 
                 case "ping":
-                    JSONObject responsePacket = new JSONObject();
-                    responsePacket.put("type", "ping");
-                    responsePacket.put("deviceName", getDeviceName());
-                    receivedPacket.put("ipAddress", getLocalIpAddress());
-                    responsePacket.put("port", serverSocket.getLocalPort());
+                    JSONObject responsePacket = getServerInfoPacket();
+                    responsePacket.put("type", "pingBack");
                     out.println(responsePacket);
                     break;
 
                 default:
-                    LOGGER.log(Level.SEVERE, "Server.handleConnection: unknown packet type");
+                    LOGGER.log(Level.SEVERE, "Server.handleConnection: " + String.format("unknown connection packet type (%s)\n", packetType));
             }
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Server.handleConnection: error handling connection");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Server.handleConnection: error handling connection\n");
         }
     }
 
-    private void generateQRCode(String ipAddress, int port) {
-        JSONObject code = new JSONObject();
-        code.put("type", "serverInfo");
-        code.put("ipAddress", ipAddress);
-        code.put("port", port);
+    private void generateQRCode() {
+        JSONObject code = getServerInfoPacket();
+        code.put("type", "qrCode");
 
         ByteArrayOutputStream stream = QRCode.from(code.toString()).to(ImageType.JPG).withSize(500, 500).stream();
         byte[] bytes = stream.toByteArray();
@@ -107,6 +132,14 @@ public class Server {
         frame.setVisible(true);
     }
 
+    private JSONObject getServerInfoPacket() {
+        JSONObject packet = new JSONObject();
+        packet.put("deviceName", getDeviceName());
+        packet.put("ipAddress", getLocalIpAddress());
+        packet.put("port", getLocalPort());
+        return packet;
+    }
+
     public static void main(String[] args) {
         try {
             Server server;
@@ -120,10 +153,10 @@ public class Server {
             try {
                 server.startServer();
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Server.main: IO exception occurred, server stopped");
+                LOGGER.log(Level.SEVERE, "Server.main: IO exception occurred, server stopped\n");
             }
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Server.main: Server failed to start");
+            LOGGER.log(Level.SEVERE, "Server.main: Server failed to start\n");
         }
     }
 }
