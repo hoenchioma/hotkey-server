@@ -45,7 +45,7 @@ public class MouseController
                 robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
                 robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
             default:
-                LOGGER.log(Level.SEVERE, "MouseController.handleIncomingPacket: invalid keyboard action");
+                LOGGER.log(Level.SEVERE, "MouseController.handleIncomingPacket: invalid keyboard action\n");
         }
     }
 }

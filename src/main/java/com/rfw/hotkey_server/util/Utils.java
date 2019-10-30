@@ -27,7 +27,7 @@ public final class Utils {
             socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
             return socket.getLocalAddress().getHostAddress();
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Utils.getLocalIpAddress: error getting local IP address");
+            LOGGER.log(Level.SEVERE, "Utils.getLocalIpAddress: error getting local IP address" + String.format(" [%s]", e.getMessage()) + "\n");
         }
         return null;
     }
@@ -44,8 +44,13 @@ public final class Utils {
     /**
      * returns the name of the device (computer name)
      */
-    public static String getDeviceName() throws UnknownHostException {
-        return InetAddress.getLocalHost().getHostName();
+    public static String getDeviceName() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            LOGGER.log(Level.SEVERE, "Utils.getDeviceName: error getting device name" + String.format(" [%s]", e.getMessage()) + "\n");
+            return null;
+        }
     }
 
     /**

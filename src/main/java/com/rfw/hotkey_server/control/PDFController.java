@@ -128,7 +128,7 @@ public class PDFController {
                 break;
             // TODO: (Wadith) implement other actions
             default:
-                LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action");
+                LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action\n");
         }
     }
 }
