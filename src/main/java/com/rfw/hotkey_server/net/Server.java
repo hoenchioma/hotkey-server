@@ -98,6 +98,7 @@ public class Server {
         ImageIcon icon = new ImageIcon(bytes);
 
         JFrame frame = new JFrame();
+        frame.setTitle("Scan this");
         JLabel label = new JLabel(icon);
         frame.add(label);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
