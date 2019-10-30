@@ -3,16 +3,15 @@
 #include <jni.h>
 #include <stdio.h>
 
-#if defined(_WIN32) || defined(WIN32) // windows implementation
+#if defined(_WIN32) || defined(WIN32)  // windows implementation
 
 #define WINVER 0x0500
 #include <windows.h>
 
 // hits the volume mute/unmute key
 JNIEXPORT void JNICALL
-Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeMute(JNIEnv *env,
+Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeMute(JNIEnv* env,
                                                           jobject thisObj) {
-
   KEYBDINPUT kbi;
 
   // specific keycode
@@ -34,9 +33,8 @@ Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeMute(JNIEnv *env,
 
 // hits the volume down key
 JNIEXPORT void JNICALL
-Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeDown(JNIEnv *env,
+Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeDown(JNIEnv* env,
                                                           jobject thisObj) {
-
   KEYBDINPUT kbi;
 
   // specific keycode
@@ -58,8 +56,7 @@ Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeDown(JNIEnv *env,
 
 // hits the volume up key
 JNIEXPORT void JNICALL Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeUp(
-    JNIEnv *env, jobject thisObj) {
-
+    JNIEnv* env, jobject thisObj) {
   KEYBDINPUT kbi;
 
   // specific keycode
@@ -81,9 +78,8 @@ JNIEXPORT void JNICALL Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeUp(
 
 // hits the previous track key
 JNIEXPORT void JNICALL
-Java_com_rfw_hotkey_1server_commands_MediaKeys_songPrevious(JNIEnv *env,
+Java_com_rfw_hotkey_1server_commands_MediaKeys_songPrevious(JNIEnv* env,
                                                             jobject thisObj) {
-
   KEYBDINPUT kbi;
 
   // specific keycode
@@ -105,8 +101,7 @@ Java_com_rfw_hotkey_1server_commands_MediaKeys_songPrevious(JNIEnv *env,
 
 // hits the next track key
 JNIEXPORT void JNICALL Java_com_rfw_hotkey_1server_commands_MediaKeys_songNext(
-    JNIEnv *env, jobject thisObj) {
-
+    JNIEnv* env, jobject thisObj) {
   KEYBDINPUT kbi;
 
   // specific keycode
@@ -128,9 +123,8 @@ JNIEXPORT void JNICALL Java_com_rfw_hotkey_1server_commands_MediaKeys_songNext(
 
 // hits the play/pause key
 JNIEXPORT void JNICALL
-Java_com_rfw_hotkey_1server_commands_MediaKeys_songPlayPause(JNIEnv *env,
+Java_com_rfw_hotkey_1server_commands_MediaKeys_songPlayPause(JNIEnv* env,
                                                              jobject thisObj) {
-
   KEYBDINPUT kbi;
 
   // specific keycode
@@ -150,52 +144,50 @@ Java_com_rfw_hotkey_1server_commands_MediaKeys_songPlayPause(JNIEnv *env,
   return;
 }
 
-#elif __linux__ // for linux systems
+#elif __linux__  // linux implementation
 
 #include <xdo.h>
 
-jint JNI_OnLoad(JavaVM* aVm, void* aReserved)
-{
- return JNI_VERSION_1_8;
-}
+jint JNI_OnLoad(JavaVM* aVm, void* aReserved) { return JNI_VERSION_1_8; }
 
 // hits the volume mute/unmute key
 JNIEXPORT void JNICALL
-Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeMute(JNIEnv *env,
+Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeMute(JNIEnv* env,
                                                           jobject thisObj) {
 
   xdo_send_keysequence_window(xdo_new(NULL), CURRENTWINDOW, "XF86AudioMute", 0);
+
   return;
 }
 
 // hits the volume down key
 JNIEXPORT void JNICALL
-Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeDown(JNIEnv *env,
+Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeDown(JNIEnv* env,
                                                           jobject thisObj) {
 
-  xdo_send_keysequence_window(xdo_new(NULL), CURRENTWINDOW, "XF86AudioLowerVolume", 0);
+  xdo_send_keysequence_window(xdo_new(NULL), CURRENTWINDOW,
+                              "XF86AudioLowerVolume", 0);
 
   return;
 }
 
 // hits the volume up key
-JNIEXPORT void JNICALL Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeUp(
-    JNIEnv *env, jobject thisObj) {
+JNIEXPORT void JNICALL 
+Java_com_rfw_hotkey_1server_commands_MediaKeys_volumeUp(JNIEnv* env, jobject thisObj) {
 
-  
-  xdo_send_keysequence_window(xdo_new(NULL), CURRENTWINDOW, "XF86AudioRaiseVolume", 0);
-
+  xdo_send_keysequence_window(xdo_new(NULL), CURRENTWINDOW,
+                              "XF86AudioRaiseVolume", 0);
   return;
 }
 
 // hits the previous track key
 JNIEXPORT void JNICALL
-Java_com_rfw_hotkey_1server_commands_MediaKeys_songPrevious(JNIEnv *env,
+Java_com_rfw_hotkey_1server_commands_MediaKeys_songPrevious(JNIEnv* env,
                                                             jobject thisObj) {
 
-  
-  xdo_send_keysequence_window(xdo_new(NULL), CURRENTWINDOW, "XF86AudioRaiseVolume", 0);
-
+  xdo_send_keysequence_window(xdo_new(NULL), CURRENTWINDOW,
+                              "XF86AudioRaiseVolume", 0);
+                              
   return;
 }
 
@@ -203,16 +195,17 @@ Java_com_rfw_hotkey_1server_commands_MediaKeys_songPrevious(JNIEnv *env,
 JNIEXPORT void JNICALL Java_com_rfw_hotkey_1server_commands_MediaKeys_songNext(
     JNIEnv *env, jobject thisObj) {
 
-  xdo_send_keysequence_window(xdo_new(NULL), CURRENTWINDOW, "XF86AudioRaiseVolume", 0);
+  xdo_send_keysequence_window(xdo_new(NULL), CURRENTWINDOW,
+                              "XF86AudioRaiseVolume", 0);
+
   return;
 }
 
 // hits the play/pause key
 JNIEXPORT void JNICALL
-Java_com_rfw_hotkey_1server_commands_MediaKeys_songPlayPause(JNIEnv *env,
+Java_com_rfw_hotkey_1server_commands_MediaKeys_songPlayPause(JNIEnv* env,
                                                              jobject thisObj) {
 
-  
   xdo_send_keysequence_window(xdo_new(NULL), CURRENTWINDOW, "XF86AudioPlay", 0);
 
   return;
