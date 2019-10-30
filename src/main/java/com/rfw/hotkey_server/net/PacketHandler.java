@@ -24,6 +24,7 @@ public class PacketHandler {
     private PowerPointController powerPointController = new PowerPointController();
     private PDFController pdfController = new PDFController();
     private LiveScreenController liveScreenController = new LiveScreenController();
+    private MediaController mediaController = new MediaController();
 
     public void handle(JSONObject packet) {
         String packetType = packet.getString("type");
@@ -42,6 +43,9 @@ public class PacketHandler {
                 break;
             case "liveScreen":
                 liveScreenController.handleIncomingPacket(packet);
+                break;
+            case "media":
+                mediaController.handleIncomingPacket(packet);
                 break;
             default:
                 LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type " + packetType);
