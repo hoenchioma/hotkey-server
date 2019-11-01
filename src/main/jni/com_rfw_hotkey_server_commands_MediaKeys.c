@@ -186,7 +186,7 @@ Java_com_rfw_hotkey_1server_commands_MediaKeys_songPrevious(JNIEnv* env,
                                                             jobject thisObj) {
 
   xdo_send_keysequence_window(xdo_new(NULL), CURRENTWINDOW,
-                              "XF86AudioRaiseVolume", 0);
+                              "XF86AudioPrev", 0);
                               
   return;
 }
@@ -196,7 +196,7 @@ JNIEXPORT void JNICALL Java_com_rfw_hotkey_1server_commands_MediaKeys_songNext(
     JNIEnv *env, jobject thisObj) {
 
   xdo_send_keysequence_window(xdo_new(NULL), CURRENTWINDOW,
-                              "XF86AudioRaiseVolume", 0);
+                              "XF86AudioNext", 0);
 
   return;
 }
