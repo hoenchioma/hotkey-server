@@ -1,8 +1,10 @@
+//import org.gradle.internal.jvm.Jvm
+
 plugins {
     id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.8'
-    id 'c'
+//    id 'c'
 }
 
 group 'com.rfw.hotkey_server'
