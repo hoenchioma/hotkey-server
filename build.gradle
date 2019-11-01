@@ -1,5 +1,3 @@
-import org.gradle.internal.jvm.Jvm
-
 plugins {
     id 'java'
     id 'application'
@@ -10,7 +8,7 @@ plugins {
 group 'com.rfw.hotkey_server'
 version '1.0-SNAPSHOT'
 
-mainClassName = "com.rfw.hotkey_server.commands.MediaKeys"
+mainClassName = "com.rfw.hotkey_server.net.Server"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
