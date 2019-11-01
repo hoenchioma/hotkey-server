@@ -299,7 +299,7 @@ public class KeyboardController {
                 pressCommandButton(packet.getString("key"));
                 break;
             default:
-                LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: invalid keyboard action");
+                LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: invalid keyboard action\n");
         }
     }
 

@@ -55,9 +55,9 @@ public class LiveScreenController {
                     liveScreenSender = new LiveScreenSender(socket, screenSizeX, screenSizeY, targetFps, compressRatio);
                     liveScreenSender.start();
                 } catch (SocketTimeoutException e) {
-                    LOGGER.log(Level.SEVERE, "LiveScreenController.handleIncomingPacket: socket connection timed out");
+                    LOGGER.log(Level.SEVERE, "LiveScreenController.handleIncomingPacket: socket connection timed out\n");
                 } catch (IOException e) {
-                    LOGGER.log(Level.SEVERE, "LiveScreenController.handleIncomingPacket: error starting LiveScreenSender");
+                    LOGGER.log(Level.SEVERE, "LiveScreenController.handleIncomingPacket: error starting LiveScreenSender\n");
                     e.printStackTrace();
                 }
                 break;
@@ -67,7 +67,7 @@ public class LiveScreenController {
                 }
                 break;
             default:
-                LOGGER.log(Level.SEVERE, "LiveScreenController.handleIncomingPacket: invalid packet");
+                LOGGER.log(Level.SEVERE, "LiveScreenController.handleIncomingPacket: invalid packet\n");
         }
     }
 
@@ -125,10 +125,10 @@ public class LiveScreenController {
 
                 } catch (IOException e) {
                     if (running) { // if client is supposed to be disconnected don't show error
-                        LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error while sending screenshot");
+                        LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error while sending screenshot\n");
                         e.printStackTrace();
                     }
-                    LOGGER.log(Level.INFO, "LiveScreenSender.run: exiting sender ...");
+                    LOGGER.log(Level.INFO, "LiveScreenSender.run: exiting sender ...\n");
                     break;
                 }
                 try {
@@ -147,7 +147,7 @@ public class LiveScreenController {
             try {
                 exit();
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error exiting");
+                LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error exiting\n");
                 e.printStackTrace();
             }
         }

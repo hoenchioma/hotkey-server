@@ -42,12 +42,12 @@ public class ConnectionHandler extends Thread {
             try {
                 String line = in.readLine();
                 if (line == null) { // check if the client is disconnected
-                    LOGGER.log(Level.INFO, "ConnectionHandler.run: client disconnected, closing socket ...");
+                    LOGGER.log(Level.INFO, "ConnectionHandler.run: client disconnected, closing socket ...\n");
                     break;
                 }
                 handleMessage(line);
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "ConnectionHandler.run: IO error closing connection");
+                LOGGER.log(Level.SEVERE, "ConnectionHandler.run: IO error closing connection\n");
                 break;
             }
         }
