@@ -27,6 +27,9 @@ public class MediaController {
             case "prev":
                 MediaKeys.songPrevious();
                 break;
+            case "mute":
+                MediaKeys.volumeMute();
+                break;
             default:
                 LOGGER.log(Level.SEVERE, "MediaController.handleIncomingPacket: unknown package action (" + action + ")");
         }

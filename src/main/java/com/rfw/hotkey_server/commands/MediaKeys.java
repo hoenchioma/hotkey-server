@@ -5,7 +5,17 @@ package com.rfw.hotkey_server.commands;
  */
 public class MediaKeys {
     static {
-        System.loadLibrary("bridge");
+        String libName = "bridge";
+        if (System.getProperty("os.name").contains("Windows")) {
+            if (System.getProperty("sun.arch.data.model").equals("32")) {
+                System.loadLibrary(libName + "-x86");
+            } else if (System.getProperty("sun.arch.data.model").equals("64")) {
+                System.loadLibrary(libName + "-x64");
+            } else {
+                throw new IllegalStateException("Unknown JVM architecture");
+            }
+        }
+        // TODO: linux
     }
 
     public static native void volumeMute();
@@ -20,7 +30,8 @@ public class MediaKeys {
 
     public static native void songPlayPause();
 
-//    public static void main(String[] args) {
-//        songPlayPause();
-//    }
+    public static void main(String[] args) {
+        songPlayPause();
+        System.getProperties().list(System.out);
+    }
 }
