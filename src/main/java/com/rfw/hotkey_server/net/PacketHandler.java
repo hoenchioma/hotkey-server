@@ -13,11 +13,11 @@ import java.util.logging.Logger;
 public class PacketHandler {
     private static final Logger LOGGER = Logger.getLogger(PacketHandler.class.getName());
 
-    public PacketHandler(ConnectionHandler connectionHandler) {
+    public PacketHandler(WiFiConnectionHandler connectionHandler) {
         this.connectionHandler = connectionHandler;
     }
 
-    private ConnectionHandler connectionHandler;
+    private WiFiConnectionHandler connectionHandler;
 
     private KeyboardController keyboardController = new KeyboardController();
     private MouseController mouseController = new MouseController();
