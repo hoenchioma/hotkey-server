@@ -1,4 +1,4 @@
-package com.rfw.hotkey_server;
+package com.rfw.hotkey_server.UI;
 
 import com.jfoenix.controls.JFXButton;
 import javafx.event.ActionEvent;
