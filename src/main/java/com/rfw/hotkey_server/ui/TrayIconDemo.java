@@ -1,22 +1,16 @@
-package com.rfw.hotkey_server.UI;
+package com.rfw.hotkey_server.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Objects;
-import javax.imageio.ImageIO;
+
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class TrayIconDemo {
+    int serverStatus = 0; // serverStatus = 0 -> off, 1 -> on
 
-    int serverStatus = 0;
-    // serverStatus=0=off
-    // serverStatus=1=on
     public static void main(String[] args) {
-
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -36,9 +30,9 @@ public class TrayIconDemo {
         }
         final PopupMenu popup = new PopupMenu();
 
-        Image img =Toolkit.getDefaultToolkit().getImage("C:/Users/ASUS/Projects/hotkey/hotkey-server/src/main/resources/bulb.gif");
+        Image img = Toolkit.getDefaultToolkit().getImage("/images/bulb.gif");
         final SystemTray tray = SystemTray.getSystemTray();
-        final TrayIcon trayIcon = new TrayIcon(img, "HotKeys", popup);
+        final TrayIcon trayIcon = new TrayIcon(img, "HotKey", popup);
 
 
         // Create a popup menu components
@@ -84,9 +78,6 @@ public class TrayIconDemo {
             }
             //TODO about Selected
         });
-
-
-
         exitItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 tray.remove(trayIcon);
@@ -94,7 +85,5 @@ public class TrayIconDemo {
             }
         });
     }
-
-
 }
 

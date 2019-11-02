@@ -19,42 +19,72 @@ public class Server {
     private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
 
     private ServerSocket serverSocket;
-    public volatile boolean stop = false;
+    private int port = 0;
+    private volatile boolean stop = true;
 
-    private Server(int port) throws IOException {
-        serverSocket = new ServerSocket(port);
+    ConnectionHandler connection = null;
+
+    public Server() { }
+
+    public Server(int port) {
+        this.port = port;
     }
 
-    private Server() throws IOException {
-        serverSocket = new ServerSocket(0);
+    public ConnectionHandler getConnection() {
+        return connection;
     }
-    
-    public void stop() {
-        stop = true;
-    }
-    
+
     public int getLocalPort() {
         return serverSocket.getLocalPort();
     }
 
-    private void startServer() throws IOException {
-        LOGGER.log(Level.INFO, "Server.startServer: " + String.format(
+    public void start() throws IOException {
+        serverSocket = new ServerSocket(port);
+
+        LOGGER.log(Level.INFO, "Server.start: " + String.format(
                 "Server started \nIP Address: %s\nPort: %d\n",
                 getLocalIpAddress(), getLocalPort()
         ));
 
-        new Thread(this::generateQRCode).start(); // generate a qr code in a different thread
-
-        connectionHandlingLoop();
+        stop = false;
+        new Thread(this::connectionHandlingLoop).start();
     }
 
-    private void connectionHandlingLoop() throws IOException {
-        while (!stop) {
-            Socket socket = serverSocket.accept();
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+    public void stop() {
+        stop = true;
+        if (connection != null) {
+            connection.stopConnection();
+        }
+    }
 
-            new Thread(() -> handleConnection(socket, in, out)).start(); // start a new thread to handle the connection
+    public boolean isRunning() {
+        return !stop;
+    }
+
+    /**
+     * method called on connecting to a device
+     * (meant to be overridden)
+     */
+    protected void onConnect(String deviceName, ConnectionType type) {}
+
+    /**
+     * method called on disconnecting from a device
+     * (meant to be overridden)
+     */
+    protected void onDisconnect() {}
+
+    private void connectionHandlingLoop() {
+        while (!stop) {
+            try {
+                Socket socket = serverSocket.accept();
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+                new Thread(() -> handleConnection(socket, in, out)).start(); // start a new thread to handle the connection
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Server.connectionHandlingLoop: error handling connection");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -68,6 +98,7 @@ public class Server {
                 case "connectionRequest":
                     String clientName = receivedPacket.getString("deviceName");
                     String connectionType = receivedPacket.getString("connectionType");
+
                     switch (connectionType) {
                         case "normal":
                             JSONObject responsePacket = new JSONObject();
@@ -75,7 +106,10 @@ public class Server {
                             responsePacket.put("deviceName", getDeviceName());
 
                             try {
-                                new ConnectionHandler(socket, in, out, clientName, this).start();
+                                if (connection != null) throw new IllegalStateException("Server already connected");
+                                connection = new WiFiConnectionHandler(socket, in, out, clientName, this);
+                                connection.startConnection();
+
                                 LOGGER.log(Level.INFO, "Server.handleConnection: " + String.format(
                                         "Connected to %s [%s]\n", clientName, getRemoteSocketAddressAndPort(socket)
                                 ));
@@ -114,22 +148,10 @@ public class Server {
         }
     }
 
-    private void generateQRCode() {
+    public String getQRCodeInfo() {
         JSONObject code = getServerInfoPacket();
         code.put("type", "qrCode");
-
-        ByteArrayOutputStream stream = QRCode.from(code.toString()).to(ImageType.JPG).withSize(500, 500).stream();
-        byte[] bytes = stream.toByteArray();
-        ImageIcon icon = new ImageIcon(bytes);
-
-        JFrame frame = new JFrame();
-        frame.setTitle("Scan this");
-        JLabel label = new JLabel(icon);
-        frame.add(label);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        return code.toString();
     }
 
     private JSONObject getServerInfoPacket() {
@@ -141,20 +163,16 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        try {
-            Server server;
-            if (args.length >= 1) {
-                int port = Integer.parseInt(args[0]);
-                server = new Server(port);
-            } else { // if no port specified bind server to any available port
-                server = new Server();
-            }
+        Server server;
+        if (args.length >= 1) {
+            int port = Integer.parseInt(args[0]);
+            server = new Server(port);
+        } else { // if no port specified bind server to any available port
+            server = new Server();
+        }
 
-            try {
-                server.startServer();
-            } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Server.main: IO exception occurred, server stopped\n");
-            }
+        try {
+            server.start();
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Server.main: Server failed to start\n");
         }
