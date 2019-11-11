@@ -1,5 +1,6 @@
 package com.rfw.hotkey_server.util;
 
+import javax.annotation.Nullable;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -8,10 +9,10 @@ import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,8 +21,10 @@ public final class Utils {
 
     /**
      * Get the local IP address of this device
+     *
      * @return IP address of device (in String format)
      */
+    @Nullable
     public static String getLocalIpAddress() {
         try (final DatagramSocket socket = new DatagramSocket()) {
             socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
@@ -34,16 +37,18 @@ public final class Utils {
 
     /**
      * get the IP address and port of a remote device
+     *
      * @param socket the socket of the device whose IP we need to find
      * @return the IP address and port separated by colon (:) [e.g. "192.168.1.2:5884"]
      */
     public static String getRemoteSocketAddressAndPort(Socket socket) {
-        return socket.getRemoteSocketAddress().toString().replace("/","");
+        return socket.getRemoteSocketAddress().toString().replace("/", "");
     }
 
     /**
      * returns the name of the device (computer name)
      */
+    @Nullable
     public static String getDeviceName() {
         try {
             return InetAddress.getLocalHost().getHostName();
@@ -53,35 +58,60 @@ public final class Utils {
         }
     }
 
-    /**
-     * Convert int to byte array
-     * @param value int to be converted
-     * @param res byte array for placing output
-     * @param offset offset for res (where in res the output is placed in)
-     */
-    public static void intToByteArray(int value, byte[] res, int offset) {
-        res[offset] = (byte)(value >> 24);
-        res[offset + 1] = (byte)(value >> 16);
-        res[offset + 2] = (byte)(value >> 8);
-        res[offset + 3] = (byte)value;
+    public static String[] getPhysicalAddress() throws SocketException {
+        final String format = "%02X"; // To get 2 char output.
+        // DHCP Enabled - InterfaceMetric
+        Set<String> macs = new LinkedHashSet<>();
+
+        Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
+        while (nis.hasMoreElements()) {
+            NetworkInterface ni = nis.nextElement();
+            byte mac[] = ni.getHardwareAddress(); // Physical Address (MAC - Medium Access Control)
+            if (mac != null) {
+                final StringBuilder macAddress = new StringBuilder();
+                for (int i = 0; i < mac.length; i++) {
+                    macAddress.append(String.format("%s" + format, (i == 0) ? "" : ":", mac[i]));
+                    //macAddress.append(String.format(format+"%s", mac[i], (i < mac.length - 1) ? ":" : ""));
+                }
+//                System.out.println(macAddress.toString());
+                macs.add(macAddress.toString());
+            }
+        }
+        return macs.toArray(new String[0]);
     }
 
     /**
      * Convert int to byte array
+     *
+     * @param value  int to be converted
+     * @param res    byte array for placing output
+     * @param offset offset for res (where in res the output is placed in)
+     */
+    public static void intToByteArray(int value, byte[] res, int offset) {
+        res[offset] = (byte) (value >> 24);
+        res[offset + 1] = (byte) (value >> 16);
+        res[offset + 2] = (byte) (value >> 8);
+        res[offset + 3] = (byte) value;
+    }
+
+    /**
+     * Convert int to byte array
+     *
      * @param value int to be converted
      * @return required byte array
      */
     public static byte[] intToByteArray(int value) {
-        return new byte[] {
-                (byte)(value >> 24),
-                (byte)(value >> 16),
-                (byte)(value >> 8),
-                (byte)value};
+        return new byte[]{
+                (byte) (value >> 24),
+                (byte) (value >> 16),
+                (byte) (value >> 8),
+                (byte) value};
     }
 
     /**
      * Convert byte array to int
-     * @param bytes byte arr to be converted
+     *
+     * @param bytes  byte arr to be converted
      * @param offset offset for bytes (where in bytes is the input located)
      * @return the required int
      */
@@ -94,7 +124,8 @@ public final class Utils {
 
     /**
      * Convert the image to JPEG
-     * @param image BufferedImage to be converted
+     *
+     * @param image   BufferedImage to be converted
      * @param quality the quality setting in the JPEG conversion (0~1)
      * @return the byte array containing the JPEG image
      */

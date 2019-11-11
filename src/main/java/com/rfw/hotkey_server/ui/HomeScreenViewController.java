@@ -3,6 +3,7 @@ package com.rfw.hotkey_server.ui;
 import com.jfoenix.controls.JFXButton;
 import com.rfw.hotkey_server.net.ConnectionType;
 import com.rfw.hotkey_server.net.Server;
+import com.rfw.hotkey_server.net.WiFiServer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,7 +19,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.rfw.hotkey_server.util.Utils.getLocalIpAddress;
@@ -49,18 +49,19 @@ public class HomeScreenViewController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        server = new Server() {
+        server = new WiFiServer() {
             @Override
-            protected void onConnect(String deviceName, ConnectionType type) {
+            public void onConnect(String deviceName) {
+                ConnectionType type = getConnectionType();
                 Platform.runLater(() -> {
                     connectedDeviceLabelID.setText(deviceName);
                     connectedDeviceLabelID.setStyle(CONNECTED_STYLE);
-                    connectionTypeLabelID.setText(type == ConnectionType.WIFI ? "WiFi" : "Unknown");
+                    connectionTypeLabelID.setText(type.toString());
                 });
             }
 
             @Override
-            protected void onDisconnect() {
+            public void onDisconnect() {
                 Platform.runLater(() -> {
                     connectedDeviceLabelID.setText("Not Connected");
                     connectedDeviceLabelID.setStyle(NOT_CONNECTED_STYLE);
@@ -88,16 +89,22 @@ public class HomeScreenViewController implements Initializable {
                 statusLabelID.setText("Online");
                 statusLabelID.setStyle(CONNECTED_STYLE);
                 startButtonID.setText("Stop");
-                portLabelID.setText(String.valueOf(server.getLocalPort()));
+                portLabelID.setText(String.valueOf(((WiFiServer) server).getLocalPort()));
             } catch (IOException e) {
+                // TODO: implement error dialog
                 e.printStackTrace();
             }
         } else {
-            server.stop();
-            statusLabelID.setText("Offline");
-            statusLabelID.setStyle(NOT_CONNECTED_STYLE);
-            startButtonID.setText("Start");
-            portLabelID.setText("-");
+            try {
+                server.stop();
+                statusLabelID.setText("Offline");
+                statusLabelID.setStyle(NOT_CONNECTED_STYLE);
+                startButtonID.setText("Start");
+                portLabelID.setText("-");
+            } catch (IOException e) {
+                // TODO: implement error dialog
+                e.printStackTrace();
+            }
         }
     }
 
@@ -105,7 +112,7 @@ public class HomeScreenViewController implements Initializable {
     private void generateQRCodeAction(ActionEvent event) {
         new Thread(() -> {
             ByteArrayOutputStream stream =
-                    QRCode.from(server.getQRCodeInfo())
+                    QRCode.from(((WiFiServer) server).getQRCodeInfo())
                             .to(ImageType.JPG)
                             .withSize(500, 500)
                             .stream();
