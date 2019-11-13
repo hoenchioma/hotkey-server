@@ -22,6 +22,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import static com.rfw.hotkey_server.util.Utils.getLocalIpAddress;
+import static com.rfw.hotkey_server.util.Utils.showQRCode;
 
 public class HomeScreenViewController implements Initializable {
     private static final Logger LOGGER = Logger.getLogger(HomeScreenViewController.class.getName());
@@ -110,24 +111,7 @@ public class HomeScreenViewController implements Initializable {
 
     @FXML
     private void generateQRCodeAction(ActionEvent event) {
-        new Thread(() -> {
-            ByteArrayOutputStream stream =
-                    QRCode.from(((WiFiServer) server).getQRCodeInfo())
-                            .to(ImageType.JPG)
-                            .withSize(500, 500)
-                            .stream();
-            byte[] bytes = stream.toByteArray();
-            ImageIcon icon = new ImageIcon(bytes);
-
-            JFrame frame = new JFrame();
-            frame.setTitle("Scan this");
-            JLabel label = new JLabel(icon);
-            frame.add(label);
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        }).start();
+        new Thread(() -> showQRCode(server.getQRCodeInfo(), 500, 500)).start();
     }
 
     public static Parent getRoot() throws IOException {

@@ -39,6 +39,7 @@ public interface Server {
      * Get a string to form connection QR code
      */
     default String getQRCodeInfo() {
+        if (!isRunning()) throw new IllegalStateException();
         return getServerInfoPacket()
                 .put("type", "qrCode")
                 .toString();
@@ -51,9 +52,10 @@ public interface Server {
      */
     default JSONObject getServerInfoPacket() {
         return new JSONObject()
-                .put("deviceName", getDeviceName())
-                .put("serverUuid", SERVER_UUID)
-                .put("serverVersion", SERVER_VERSION);
+                .put("connectionType", getConnectionType().toCamelCaseString())
+                .put("deviceName", getDeviceName());
+//                .put("serverUuid", SERVER_UUID)
+//                .put("serverVersion", SERVER_VERSION);
     }
 
     /**
@@ -86,14 +88,21 @@ public interface Server {
 
             if (packetType.equals("connectionRequest")) {
                 String clientName = receivedPacket.getString("deviceName");
-                String connectionType = receivedPacket.getString("connectionType");
+//                String connectionType = receivedPacket.getString("connectionType");
 
                 String serverUuid = receivedPacket.getString("serverUuid");
                 int serverVersion = receivedPacket.getInt("serverVersion");
 
-                JSONObject responsePacket = new JSONObject();
-                responsePacket.put("type", "connectionResponse");
-                responsePacket.put("deviceName", getDeviceName());
+                if (!serverUuid.equals(SERVER_UUID) || serverVersion != SERVER_VERSION) {
+                    LOGGER.log(Level.SEVERE, "Server.handleConnection: client mismatch with server");
+                    throw new IllegalArgumentException("wrong server uuid and/or version");
+                }
+
+                JSONObject responsePacket = new JSONObject()
+                        .put("type", "connectionResponse")
+                        .put("deviceName", getDeviceName())
+                        .put("serverUuid", SERVER_UUID)
+                        .put("serverVersion", SERVER_VERSION);
 
                 try {
                     if (getConnection() != null) throw new IllegalStateException("Server already connected");
@@ -125,7 +134,7 @@ public interface Server {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             LOGGER.log(Level.SEVERE, "Server.handleConnection: error handling connection\n");
         }
     }
