@@ -119,7 +119,9 @@ public class PDFController {
     }
 
     public void gotoPage(String number,String platform) {
-        if(platform == "1") {
+
+        LOGGER.log(Level.SEVERE,"platform : "+platform);
+        if(platform.equals("1")) {
 
             keyPress(KeyEvent.VK_SHIFT);
             keyPress(KeyEvent.VK_CONTROL);
@@ -129,7 +131,7 @@ public class PDFController {
             keyRelease(KeyEvent.VK_CONTROL);
             keyRelease(KeyEvent.VK_N);
         }
-        else if(platform == "2"){
+        else if(platform.equals("2")){
             keyPress(KeyEvent.VK_CONTROL);
             keyPress(KeyEvent.VK_L);
             robot.delay(20);
@@ -137,13 +139,21 @@ public class PDFController {
             keyRelease(KeyEvent.VK_L);
 
         }
+        String checkNumber = " ";
+        int pageNumber;
+        //LOGGER.log(Level.SEVERE,"From Client : "+number+ "  and Length "+number.length());
         for (int i = 0; i < number.length(); i++) {
-            keyPress((int) number.charAt(i));
-            robot.delay(10);
-            keyRelease((int) number.charAt(i));
+
+            pageNumber = (int) number.charAt(i);
+          //  LOGGER.log(Level.SEVERE,"Ascii "+String.valueOf(pageNumber));
+            keyPress(pageNumber);
+            checkNumber+= number.charAt(i);
+            robot.delay(20);
+            keyRelease(pageNumber);
         }
+       // LOGGER.log(Level.SEVERE,"Goto page : "+checkNumber);
         keyPress(KeyEvent.VK_ENTER);
-        robot.delay(30);
+        robot.delay(20);
         keyRelease(KeyEvent.VK_ENTER);
     }
 
