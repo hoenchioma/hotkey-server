@@ -17,6 +17,8 @@ import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.rfw.hotkey_server.util.Utils.showQRCode;
+
 public class BluetoothServer implements Server {
     private static final Logger LOGGER = Logger.getLogger(BluetoothServer.class.getName());
 
@@ -101,7 +103,7 @@ public class BluetoothServer implements Server {
     public @Nullable JSONObject getServerInfoPacket() {
         try {
             return Server.super.getServerInfoPacket()
-                    .put("bluetoothDeviceName", LocalDevice.getLocalDevice().getFriendlyName())
+//                    .put("bluetoothDeviceName", LocalDevice.getLocalDevice().getFriendlyName())
                     .put("bluetoothAddress", getBluetoothAddress())
                     .put("bluetoothServiceUuid", BLUETOOTH_SERVICE_UUID);
         } catch (BluetoothStateException e) {
@@ -133,6 +135,7 @@ public class BluetoothServer implements Server {
         BluetoothServer server = new BluetoothServer();
         try {
             server.start();
+            showQRCode(server.getQRCodeInfo(), 500, 500);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "BluetoothServer.main: BluetoothServer failed to start\n");
             e.printStackTrace();
