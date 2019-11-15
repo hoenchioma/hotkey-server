@@ -18,6 +18,7 @@ targetCompatibility = 1.8
 repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
+    flatDir { dirs 'libs' } // local lib folder
 }
 
 javafx {
@@ -34,8 +35,9 @@ dependencies {
     compile 'org.json:json:20190722' // JSON handling
     compile 'org.imgscalr:imgscalr-lib:4.2' // image processing
     compile 'com.github.kenglxn.QRGen:javase:2.6.0' // QR code generation
-    compile 'net.sf.bluecove:bluecove:2.1.0' // bluetooth connectivity
-    compile 'net.sf.bluecove:bluecove-gpl:2.1.0' // bluetooth connectivity module for linux
+    // bluetooth support
+    implementation name: 'bluecove-2.1.1'
+    implementation name: 'bluecove-gpl-2.1.1' // for linux
 }
 
 run {
