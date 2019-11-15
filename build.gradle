@@ -15,6 +15,8 @@ mainClassName = "com.rfw.hotkey_server.Main"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+String osName = System.getProperty('os.name').toLowerCase().split()[0]
+
 repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
@@ -35,13 +37,26 @@ dependencies {
     compile 'org.json:json:20190722' // JSON handling
     compile 'org.imgscalr:imgscalr-lib:4.2' // image processing
     compile 'com.github.kenglxn.QRGen:javase:2.6.0' // QR code generation
+
     // bluetooth support
-    implementation name: 'bluecove-2.1.1'
-    implementation name: 'bluecove-gpl-2.1.1' // for linux
+    // use different library versions for different OS
+    switch (osName) {
+        case 'windows':
+            // v2.1.1 contains x64 dll files (for 64 bit windows support)
+            implementation name: 'bluecove-2.1.1'
+            break
+        case 'linux':
+            // v2.1.0 contains .so files (for linux support)
+            implementation name: 'bluecove-2.1.0'
+            implementation name: 'bluecove-gpl-2.1.0'
+            break
+        default:
+            throw new Exception('Unknown OS')
+    }
 }
 
 run {
-    systemProperty "java.library.path", file("$projectDir/libs").absolutePath
+    systemProperty "java.library.path", file("$projectDir/libs/native").absolutePath
 }
 
 //// native bridge library
