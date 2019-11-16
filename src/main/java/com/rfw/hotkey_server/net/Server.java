@@ -4,177 +4,146 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.rfw.hotkey_server.util.Utils.*;
+import static com.rfw.hotkey_server.util.Utils.getDeviceName;
 
-public class Server {
-    private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
+public interface Server {
+    Logger LOGGER = Logger.getLogger(Server.class.getName());
 
-    private ServerSocket serverSocket;
-    private int port = 0;
-    private volatile boolean stop = true;
+    String SERVER_UUID = "8fbdf1a6-1185-43a7-952a-3f38f6af0c36";
+    int SERVER_VERSION = 1;
 
-    ConnectionHandler connection = null;
+    ConnectionType getConnectionType();
 
-    public Server() { }
+    ConnectionHandler getConnection();
 
-    public Server(int port) {
-        this.port = port;
+    void setConnection(ConnectionHandler connection);
+
+    default void removeConnection() {
+        setConnection(null);
     }
 
-    public ConnectionHandler getConnection() {
-        return connection;
+    void start() throws IOException;
+
+    void stop() throws IOException;
+
+    boolean isRunning();
+
+    /**
+     * Get a string to form connection QR code
+     */
+    default String getQRCodeInfo() {
+        if (!isRunning()) throw new IllegalStateException();
+        return getServerInfoPacket()
+                .put("type", "qrCode")
+                .toString();
     }
 
-    public int getLocalPort() {
-        return serverSocket.getLocalPort();
-    }
-
-    public void start() throws IOException {
-        serverSocket = new ServerSocket(port);
-
-        LOGGER.log(Level.INFO, "Server.start: " + String.format(
-                "Server started \nIP Address: %s\nPort: %d\n",
-                getLocalIpAddress(), getLocalPort()
-        ));
-
-        stop = false;
-        new Thread(this::connectionHandlingLoop).start();
-    }
-
-    public void stop() {
-        stop = true;
-        if (connection != null) {
-            connection.stopConnection();
-        }
-    }
-
-    public boolean isRunning() {
-        return !stop;
+    /**
+     * Returns a JSON packet containing info about server
+     *
+     * @return JSONObject containing the info
+     */
+    default JSONObject getServerInfoPacket() {
+        return new JSONObject()
+                .put("connectionType", getConnectionType().toCamelCaseString())
+                .put("deviceName", getDeviceName());
+//                .put("serverUuid", SERVER_UUID)
+//                .put("serverVersion", SERVER_VERSION);
     }
 
     /**
      * method called on connecting to a device
      * (meant to be overridden)
      */
-    protected void onConnect(String deviceName, ConnectionType type) {}
+    default void onConnect(String deviceName) {}
 
     /**
      * method called on disconnecting from a device
      * (meant to be overridden)
      */
-    protected void onDisconnect() {}
+    default void onDisconnect() {}
 
-    private void connectionHandlingLoop() {
-        while (!stop) {
-            try {
-                Socket socket = serverSocket.accept();
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+    /**
+     * method called when an error occurs
+     * @param exception exception that was thrown
+     * (meant to be overridden)
+     */
+    default void onError(@Nullable Exception exception) {}
 
-                new Thread(() -> handleConnection(socket, in, out)).start(); // start a new thread to handle the connection
-            } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Server.connectionHandlingLoop: error handling connection");
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void handleConnection(Socket socket, BufferedReader in, PrintWriter out) {
+    /**
+     * Static method for handling/initiating a connection
+     * (this automatically starts a ClientHandler to handle the connection)
+     *
+     * @param in         input stream
+     * @param out        output stream
+     * @param identifier String to uniquely identify the client (address, port, UUID, etc.)
+     */
+    default void handleConnection(BufferedReader in,
+                                  PrintWriter out,
+                                  @Nullable String identifier) {
         try {
             String message = in.readLine();
             JSONObject receivedPacket = new JSONObject(new JSONTokener(message));
             String packetType = receivedPacket.getString("type");
 
-            switch (packetType) {
-                case "connectionRequest":
-                    String clientName = receivedPacket.getString("deviceName");
-                    String connectionType = receivedPacket.getString("connectionType");
+            if (packetType.equals("connectionRequest")) {
+                String clientName = receivedPacket.getString("deviceName");
+//                String connectionType = receivedPacket.getString("connectionType");
 
-                    switch (connectionType) {
-                        case "normal":
-                            JSONObject responsePacket = new JSONObject();
-                            responsePacket.put("type", "connectionResponse");
-                            responsePacket.put("deviceName", getDeviceName());
+                String serverUuid = receivedPacket.getString("serverUuid");
+                int serverVersion = receivedPacket.getInt("serverVersion");
 
-                            try {
-                                if (connection != null) throw new IllegalStateException("Server already connected");
-                                connection = new WiFiConnectionHandler(socket, in, out, clientName, this);
-                                connection.startConnection();
+                if (!serverUuid.equals(SERVER_UUID) || serverVersion != SERVER_VERSION) {
+                    LOGGER.log(Level.SEVERE, "Server.handleConnection: client mismatch with server");
+                    throw new IllegalArgumentException("wrong server uuid and/or version");
+                }
 
-                                LOGGER.log(Level.INFO, "Server.handleConnection: " + String.format(
-                                        "Connected to %s [%s]\n", clientName, getRemoteSocketAddressAndPort(socket)
-                                ));
-                                responsePacket.put("success", true);
-                            } catch (Exception e) {
-                                LOGGER.log(Level.SEVERE, "Server.handleConnection: " + String.format(
-                                        "failed to start connection\n[%s, %s]\n",
-                                        clientName,
-                                        getRemoteSocketAddressAndPort(socket)
-                                ));
-                                responsePacket.put("success", false);
-                            }
+                JSONObject responsePacket = new JSONObject()
+                        .put("type", "connectionResponse")
+                        .put("deviceName", getDeviceName())
+                        .put("serverUuid", SERVER_UUID)
+                        .put("serverVersion", SERVER_VERSION);
 
-                            out.println(responsePacket);
+                try {
+                    if (getConnection() != null) throw new IllegalStateException("Server already connected");
+                    setConnection(new ConnectionHandler(in, out, clientName, this));
+                    getConnection().startConnection();
 
-                            break;
+                    LOGGER.log(Level.INFO, "Server.handleConnection: " + String.format(
+                            "Connected to %s [%s]\n", clientName, identifier
+                    ));
+                    responsePacket.put("success", true);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Server.handleConnection: " + String.format(
+                            "failed to start connection\n[%s, %s]\n",
+                            clientName,
+                            identifier
+                    ));
+                    responsePacket.put("success", false);
+                }
 
-                        default:
-                            LOGGER.log(Level.SEVERE, "Server.handleConnection: " + String.format("unknown connection type (%s)\n", connectionType));
-                    }
-                    break;
+                out.println(responsePacket);
 
-                case "ping":
-                    JSONObject responsePacket = getServerInfoPacket();
-                    responsePacket.put("type", "pingBack");
-                    out.println(responsePacket);
-                    break;
+            } else if (packetType.equals("ping")) {
+                JSONObject responsePacket = getServerInfoPacket();
+                responsePacket.put("type", "pingBack");
+                out.println(responsePacket);
 
-                default:
-                    LOGGER.log(Level.SEVERE, "Server.handleConnection: " + String.format("unknown connection packet type (%s)\n", packetType));
+            } else {
+                LOGGER.log(Level.SEVERE, "Server.handleConnection: " + String.format("unknown connection packet type (%s)\n", packetType));
             }
         } catch (JSONException e) {
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
+            onError(e);
             LOGGER.log(Level.SEVERE, "Server.handleConnection: error handling connection\n");
-        }
-    }
-
-    public String getQRCodeInfo() {
-        JSONObject code = getServerInfoPacket();
-        code.put("type", "qrCode");
-        return code.toString();
-    }
-
-    private JSONObject getServerInfoPacket() {
-        JSONObject packet = new JSONObject();
-        packet.put("deviceName", getDeviceName());
-        packet.put("ipAddress", getLocalIpAddress());
-        packet.put("port", getLocalPort());
-        return packet;
-    }
-
-    public static void main(String[] args) {
-        Server server;
-        if (args.length >= 1) {
-            int port = Integer.parseInt(args[0]);
-            server = new Server(port);
-        } else { // if no port specified bind server to any available port
-            server = new Server();
-        }
-
-        try {
-            server.start();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Server.main: Server failed to start\n");
         }
     }
 }

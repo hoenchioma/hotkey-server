@@ -1,0 +1,17 @@
+.root {
+    -fx-background-color: white;
+}
+
+.button {
+    -fx-background-color: #7289da;
+    -fx-text-fill: white;
+}
+
+.label {
+    -fx-text-fill: black;
+}
+
+#transparentButton {
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+}
