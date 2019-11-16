@@ -10,10 +10,7 @@ import javax.bluetooth.UUID;
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +41,14 @@ public class BluetoothServer implements Server {
     @Override
     public void setConnection(ConnectionHandler connection) {
         this.connection = connection;
+    }
+
+    public static boolean isBluetoothEnabled() {
+        return LocalDevice.isPowerOn();
+    }
+
+    public static String getFriendlyName() throws BluetoothStateException {
+        return LocalDevice.getLocalDevice().getFriendlyName();
     }
 
     public String getBluetoothAddress() throws BluetoothStateException {
@@ -124,7 +129,10 @@ public class BluetoothServer implements Server {
                 String identifier = dev.getFriendlyName(true) + ", " + dev.getBluetoothAddress();
 
                 new Thread(() -> handleConnection(in, out, identifier)).start(); // start a new thread to handle the connection
+            } catch (InterruptedIOException e) {
+                LOGGER.log(Level.WARNING, "BluetoothServer.connectionHandlingLoop: " + e.getMessage());
             } catch (IOException e) {
+                onError(e);
                 LOGGER.log(Level.SEVERE, "BluetoothServer.connectionHandlingLoop: error handling connection");
                 e.printStackTrace();
             }

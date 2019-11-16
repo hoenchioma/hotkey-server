@@ -56,6 +56,7 @@ public class ConnectionHandler extends Thread {
                 }
                 handleMessage(line);
             } catch (IOException e) {
+                server.onError(e);
                 LOGGER.log(Level.SEVERE, "ConnectionHandler.run: IO error closing connection\n");
                 break;
             }

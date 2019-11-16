@@ -71,6 +71,13 @@ public interface Server {
     default void onDisconnect() {}
 
     /**
+     * method called when an error occurs
+     * @param exception exception that was thrown
+     * (meant to be overridden)
+     */
+    default void onError(@Nullable Exception exception) {}
+
+    /**
      * Static method for handling/initiating a connection
      * (this automatically starts a ClientHandler to handle the connection)
      *
@@ -135,6 +142,7 @@ public interface Server {
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException | IllegalArgumentException e) {
+            onError(e);
             LOGGER.log(Level.SEVERE, "Server.handleConnection: error handling connection\n");
         }
     }

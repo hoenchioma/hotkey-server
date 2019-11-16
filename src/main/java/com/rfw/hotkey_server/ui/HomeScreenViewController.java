@@ -1,6 +1,7 @@
 package com.rfw.hotkey_server.ui;
 
 import com.jfoenix.controls.JFXButton;
+import com.rfw.hotkey_server.net.BluetoothServer;
 import com.rfw.hotkey_server.net.ConnectionType;
 import com.rfw.hotkey_server.net.Server;
 import com.rfw.hotkey_server.net.WiFiServer;
@@ -9,16 +10,21 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
-import net.glxn.qrgen.core.image.ImageType;
-import net.glxn.qrgen.javase.QRCode;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 
-import javax.swing.*;
-import java.io.ByteArrayOutputStream;
+import javax.annotation.Nullable;
+import javax.bluetooth.BluetoothStateException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.rfw.hotkey_server.util.Utils.getLocalIpAddress;
@@ -26,87 +32,249 @@ import static com.rfw.hotkey_server.util.Utils.showQRCode;
 
 public class HomeScreenViewController implements Initializable {
     private static final Logger LOGGER = Logger.getLogger(HomeScreenViewController.class.getName());
+    
+    private static final String STATUS_LABEL_ONLINE = "Online";
+    private static final String STATUS_LABEL_OFFLINE = "Offline";
+    
+    private static final String START_BUTTON_TEXT = "START";
+    private static final String STOP_BUTTON_TEXT = "STOP";
 
-    private static final String CONNECTED_STYLE = "-fx-text-fill: #7FFF00;";
-    private static final String NOT_CONNECTED_STYLE = "-fx-text-fill: white;";
+    private static final String NOT_CONNECTED_TEXT = "Not Connected";
+    
+    private static final Paint CONNECTED_COLOR = Paint.valueOf("lime");
+    private static final Paint BASE_COLOR = Paint.valueOf("white");
+    private static final Paint HIGHLIGHT_COLOR = Paint.valueOf("#7289da");
 
-    @FXML private JFXButton startButtonID;
-    @FXML private JFXButton settingButtonID;
-    @FXML private JFXButton generateQRCodeButtonID;
+    @FXML private AnchorPane parent;
 
-    @FXML private Label statusLabelID;
-    @FXML private Label connectedDeviceLabelID;
-    @FXML private Label iPLabelID;
-    @FXML private Label portLabelID;
-    @FXML private Label connectionTypeLabelID;
+    @FXML private JFXButton startButton;
+    @FXML private JFXButton settingsButton;
+    @FXML private JFXButton generateQRCodeButton;
+
+    @FXML private VBox settingsMenu;
+    @FXML private JFXButton menuWiFiButton;
+    @FXML private JFXButton menuBluetoothButton;
+
+    @FXML private Label statusLabel;
+    @FXML private Label connectedDeviceLabel;
+    @FXML private Label connectionTypeLabel;
+
+    @FXML private Label field1;
+    @FXML private Label field2;
+    @FXML private Label field1value;
+    @FXML private Label field2value;
 
     private Server server;
-    private ConnectionType serverType;
+    private ConnectionType serverType = ConnectionType.WIFI;
+    private boolean menuIsShowing = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        server = new WiFiServer() {
-            @Override
-            public void onConnect(String deviceName) {
-                ConnectionType type = getConnectionType();
-                Platform.runLater(() -> {
-                    connectedDeviceLabelID.setText(deviceName);
-                    connectedDeviceLabelID.setStyle(CONNECTED_STYLE);
-                    connectionTypeLabelID.setText(type.toString());
-                });
-            }
+        // initializes server related fields
+        stopServer();
 
-            @Override
-            public void onDisconnect() {
-                Platform.runLater(() -> {
-                    connectedDeviceLabelID.setText("Not Connected");
-                    connectedDeviceLabelID.setStyle(NOT_CONNECTED_STYLE);
-                    connectionTypeLabelID.setText("-");
-                });
-            }
-        };
-        statusLabelID.setText("Offline");
-        statusLabelID.setStyle(NOT_CONNECTED_STYLE);
-        startButtonID.setText("Start");
+        // initializes client related fields
+        onClientDisconnect();
 
-        iPLabelID.setText(getLocalIpAddress());
-        portLabelID.setText("-");
+        // select server in WiFi mode
+        menuWiFiAction(new ActionEvent());
+        hideMenu();
 
-        connectedDeviceLabelID.setText("Not Connected");
-        connectedDeviceLabelID.setStyle(NOT_CONNECTED_STYLE);
-        connectionTypeLabelID.setText("-");
+        parent.setOnMouseClicked(this::onMouseClick);
+    }
+
+    private void onMouseClick(MouseEvent event) {
+        // if user clicks on any place other than button menu is hidden
+        if (menuIsShowing) hideMenu();
     }
 
     @FXML
     private void settingsButtonAction(ActionEvent event) {
+        if (!menuIsShowing) showMenu();
+        else hideMenu();
+    }
 
+    @FXML
+    private void menuWiFiAction(ActionEvent event) {
+        if (server != null && server.isRunning()) {
+            new Alert(Alert.AlertType.WARNING, "Stop server first").show();
+        } else {
+            serverType = ConnectionType.WIFI;
+
+            clearMenuSelect(); // clear previous selection highlight
+            menuWiFiButton.setTextFill(HIGHLIGHT_COLOR);
+
+            connectionTypeLabel.setText(serverType.toString());
+
+            // set extra field values
+            field1.setText("IP Address");
+            field2.setText("Port");
+            field1value.setText(getLocalIpAddress());
+            field2value.setText("-");
+        }
+        hideMenu();
+    }
+
+    @FXML
+    private void menuBluetoothAction(ActionEvent event) {
+        if (server != null && server.isRunning()) {
+            new Alert(Alert.AlertType.WARNING, "Stop server first").show();
+        } else if (!BluetoothServer.isBluetoothEnabled()) {
+            new Alert(Alert.AlertType.ERROR, "Bluetooth is not enabled").show();
+        } else {
+            serverType = ConnectionType.BLUETOOTH;
+
+            clearMenuSelect(); // clear previous selection highlight
+            menuBluetoothButton.setTextFill(HIGHLIGHT_COLOR);
+
+            connectionTypeLabel.setText(serverType.toString());
+
+            // set extra field values
+            field1.setText("Bluetooth Name");
+            field2.setText("Address");
+            try {
+                field1value.setText(BluetoothServer.getFriendlyName());
+            } catch (BluetoothStateException e) {
+                e.printStackTrace();
+            }
+            field2value.setText("-");
+        }
+        hideMenu();
+    }
+
+    private void showMenu() {
+        settingsMenu.setVisible(true);
+        settingsMenu.setDisable(false);
+        menuIsShowing = true;
+    }
+
+    private void hideMenu() {
+        settingsMenu.setVisible(false);
+        settingsMenu.setDisable(true);
+        menuIsShowing = false;
+    }
+
+    private void clearMenuSelect() {
+        for (Node i: settingsMenu.getChildren()) {
+            if (i instanceof JFXButton) {
+                ((JFXButton) i).setTextFill(BASE_COLOR);
+            }
+        }
     }
 
     @FXML
     private void startButtonAction(ActionEvent event) {
-        if (!server.isRunning()) {
-            try {
-                server.start();
-                statusLabelID.setText("Online");
-                statusLabelID.setStyle(CONNECTED_STYLE);
-                startButtonID.setText("STOP");
-                portLabelID.setText(String.valueOf(((WiFiServer) server).getLocalPort()));
-            } catch (IOException e) {
-                // TODO: implement error dialog
-                e.printStackTrace();
-            }
+        if (server == null || !server.isRunning()) {
+            setupServer();
+            startServer();
         } else {
-            try {
-                server.stop();
-                statusLabelID.setText("Offline");
-                statusLabelID.setStyle(NOT_CONNECTED_STYLE);
-                startButtonID.setText("START");
-                portLabelID.setText("-");
-            } catch (IOException e) {
-                // TODO: implement error dialog
-                e.printStackTrace();
-            }
+            stopServer();
         }
+    }
+
+    private void startServer() {
+        assert server != null;
+        try {
+            server.start();
+
+            statusLabel.setText(STATUS_LABEL_ONLINE);
+            statusLabel.setTextFill(CONNECTED_COLOR);
+            startButton.setText(STOP_BUTTON_TEXT);
+
+            // set field2 value
+            switch (serverType) {
+                case WIFI:
+                    WiFiServer wiFiServer = (WiFiServer) server;
+                    field2value.setText(String.valueOf(wiFiServer.getLocalPort()));
+                    break;
+                case BLUETOOTH:
+                    BluetoothServer bluetoothServer = (BluetoothServer) server;
+                    field2value.setText(bluetoothServer.getBluetoothAddress());
+                    break;
+                default:
+                    LOGGER.log(Level.SEVERE, "HomeScreenViewController.startButtonAction: invalid server type");
+            }
+
+            generateQRCodeButton.setDisable(false);
+        } catch (IOException e) {
+            new Alert(Alert.AlertType.ERROR, e.getLocalizedMessage()).show();
+            e.printStackTrace();
+        }
+    }
+
+    private void stopServer() {
+        try {
+            if (server != null) server.stop();
+
+            statusLabel.setText(STATUS_LABEL_OFFLINE);
+            statusLabel.setTextFill(BASE_COLOR);
+            startButton.setText(START_BUTTON_TEXT);
+            field2value.setText("-");
+
+            generateQRCodeButton.setDisable(true);
+        } catch (IOException e) {
+            new Alert(Alert.AlertType.ERROR, e.getLocalizedMessage()).show();
+            e.printStackTrace();
+        }
+    }
+
+    private void setupServer() {
+        switch (serverType) {
+            case WIFI:
+                server = new WiFiServer() {
+                    @Override
+                    public void onConnect(String deviceName) {
+                        Platform.runLater(() -> onClientConnect(deviceName));
+                    }
+
+                    @Override
+                    public void onDisconnect() {
+                        Platform.runLater(() -> onClientDisconnect());
+                    }
+
+                    @Override
+                    public void onError(@Nullable Exception exception) {
+                        String error;
+                        if (exception != null && (error = exception.getLocalizedMessage()) != null) {
+                            Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, error).show());
+                        }
+                    }
+                };
+                break;
+            case BLUETOOTH:
+                server = new BluetoothServer() {
+                    @Override
+                    public void onConnect(String deviceName) {
+                        Platform.runLater(() -> onClientConnect(deviceName));
+                    }
+
+                    @Override
+                    public void onDisconnect() {
+                        Platform.runLater(() -> onClientDisconnect());
+                    }
+
+                    @Override
+                    public void onError(@Nullable Exception exception) {
+                        String error;
+                        if (exception != null && (error = exception.getLocalizedMessage()) != null) {
+                            Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, error).show());
+                        }
+                    }
+                };
+                break;
+            default:
+                LOGGER.log(Level.SEVERE, "HomeScreenViewController.startButtonAction: invalid server type");
+        }
+    }
+
+    private void onClientConnect(String deviceName) {
+        connectedDeviceLabel.setText(deviceName);
+        connectedDeviceLabel.setTextFill(CONNECTED_COLOR);
+    }
+
+    private void onClientDisconnect() {
+        connectedDeviceLabel.setText(NOT_CONNECTED_TEXT);
+        connectedDeviceLabel.setTextFill(BASE_COLOR);
     }
 
     @FXML
