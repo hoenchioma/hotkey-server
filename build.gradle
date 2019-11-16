@@ -15,9 +15,12 @@ mainClassName = "com.rfw.hotkey_server.Main"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+String osName = System.getProperty('os.name').toLowerCase().split()[0]
+
 repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
+    flatDir { dirs 'libs' } // local lib folder
 }
 
 javafx {
@@ -28,14 +31,32 @@ javafx {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
-    compile 'org.json:json:20190722'
-    compile 'org.imgscalr:imgscalr-lib:4.2'
-    compile 'com.jfoenix:jfoenix:9.0.1'
-    compile 'com.github.kenglxn.QRGen:javase:2.6.0'
+    compile 'com.google.code.findbugs:jsr305:3.0.2' // debugging help library (Nullable, NonNull, etc.)
+
+    compile 'com.jfoenix:jfoenix:9.0.1' // material design library for javaFX
+    compile 'org.json:json:20190722' // JSON handling
+    compile 'org.imgscalr:imgscalr-lib:4.2' // image processing
+    compile 'com.github.kenglxn.QRGen:javase:2.6.0' // QR code generation
+
+    // bluetooth support
+    // use different library versions for different OS
+    switch (osName) {
+        case 'windows':
+            // v2.1.1 contains x64 dll files (for 64 bit windows support)
+            implementation name: 'bluecove-2.1.1'
+            break
+        case 'linux':
+            // v2.1.0 contains .so files (for linux support)
+            implementation name: 'bluecove-2.1.0'
+            implementation name: 'bluecove-gpl-2.1.0'
+            break
+        default:
+            throw new Exception('Unknown OS')
+    }
 }
 
 run {
-    systemProperty "java.library.path", file("$projectDir/libs").absolutePath
+    systemProperty "java.library.path", file("$projectDir/libs/native").absolutePath
 }
 
 //// native bridge library
