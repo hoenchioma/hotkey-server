@@ -30,23 +30,18 @@ public class HomeScreenViewController implements Initializable {
     private static final String CONNECTED_STYLE = "-fx-text-fill: #7FFF00;";
     private static final String NOT_CONNECTED_STYLE = "-fx-text-fill: white;";
 
-    @FXML
-    private JFXButton settingButtonID;
-    @FXML
-    private JFXButton startButtonID;
+    @FXML private JFXButton startButtonID;
+    @FXML private JFXButton settingButtonID;
+    @FXML private JFXButton generateQRCodeButtonID;
 
-    @FXML
-    private Label statusLabelID;
-    @FXML
-    private Label connectedDeviceLabelID;
-    @FXML
-    private Label iPLabelID;
-    @FXML
-    private Label portLabelID;
-    @FXML
-    private Label connectionTypeLabelID;
+    @FXML private Label statusLabelID;
+    @FXML private Label connectedDeviceLabelID;
+    @FXML private Label iPLabelID;
+    @FXML private Label portLabelID;
+    @FXML private Label connectionTypeLabelID;
 
     private Server server;
+    private ConnectionType serverType;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -83,13 +78,18 @@ public class HomeScreenViewController implements Initializable {
     }
 
     @FXML
+    private void settingsButtonAction(ActionEvent event) {
+
+    }
+
+    @FXML
     private void startButtonAction(ActionEvent event) {
         if (!server.isRunning()) {
             try {
                 server.start();
                 statusLabelID.setText("Online");
                 statusLabelID.setStyle(CONNECTED_STYLE);
-                startButtonID.setText("Stop");
+                startButtonID.setText("STOP");
                 portLabelID.setText(String.valueOf(((WiFiServer) server).getLocalPort()));
             } catch (IOException e) {
                 // TODO: implement error dialog
@@ -100,7 +100,7 @@ public class HomeScreenViewController implements Initializable {
                 server.stop();
                 statusLabelID.setText("Offline");
                 statusLabelID.setStyle(NOT_CONNECTED_STYLE);
-                startButtonID.setText("Start");
+                startButtonID.setText("START");
                 portLabelID.setText("-");
             } catch (IOException e) {
                 // TODO: implement error dialog

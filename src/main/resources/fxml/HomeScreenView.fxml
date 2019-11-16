@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="545.0" prefWidth="626.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rfw.hotkey_server.ui.HomeScreenViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="575.0" prefWidth="803.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rfw.hotkey_server.ui.HomeScreenViewController">
     <children>
         <VBox alignment="CENTER" layoutX="-5.0" layoutY="-2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
@@ -30,28 +30,28 @@
                             <graphic>
                                 <ImageView fitHeight="31.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
-                                        <Image url="@../images/three-dot-white.png" />
+                                        <Image url="@../images/three-dot-white-50px.png" />
                                     </image>
                                 </ImageView>
                             </graphic>
                         </JFXButton>
                     </children>
                 </AnchorPane>
-            <StackPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="87.0" style="-fx-background-color: #7289da;">
+            <StackPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="87.0">
                <children>
                   <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="115.0" prefWidth="114.0" style="-fx-background-color: #2c2f33; -fx-background-radius: 100;">
                      <effect>
                         <DropShadow />
                      </effect>
                   </VBox>
-                  <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="83.0" prefWidth="81.0" style="-fx-background-color: white; -fx-background-radius: 87;">
+                  <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="90.0" style="-fx-background-color: white; -fx-background-radius: 87;">
                      <effect>
                         <DropShadow />
                      </effect>
                      <children>
-                        <JFXButton fx:id="startButtonID" buttonType="RAISED" onAction="#startButtonAction" prefHeight="111.0" prefWidth="126.0" ripplerFill="BLACK" style="-fx-background-color: #7289da; -fx-background-radius: 100;" text="Start" textFill="WHITE">
+                        <JFXButton fx:id="startButtonID" buttonType="RAISED" onAction="#startButtonAction" prefHeight="111.0" prefWidth="126.0" ripplerFill="BLACK" style="-fx-background-color: #7289da; -fx-background-radius: 100;" text="START" textAlignment="CENTER" textFill="WHITE">
                            <font>
-                              <Font name="Rockwell" size="21.0" />
+                              <Font size="18.0" />
                            </font>
                         </JFXButton>
                      </children>
@@ -194,9 +194,16 @@
                   <Insets top="6.0" />
                </padding>
                 </StackPane>
-                  <StackPane minWidth="-Infinity" prefHeight="69.0" prefWidth="600.0">
+                  <StackPane minWidth="-Infinity" prefHeight="87.0" prefWidth="803.0">
                       <children>
-                          <JFXButton fx:id="gnerateQRCodeButtonID" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#generateQRCodeAction" prefHeight="40.0" prefWidth="238.0" ripplerFill="BLACK" style="-fx-background-color: #7289da; -fx-background-radius: 10;" text="Generate QR Code" textFill="WHITE" StackPane.alignment="TOP_CENTER" />
+                          <JFXButton fx:id="generateQRCodeButtonID" buttonType="RAISED" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#generateQRCodeAction" prefHeight="55.0" prefWidth="238.0" ripplerFill="BLACK" style="-fx-background-color: #7289da; -fx-background-radius: 10;" text="QR CODE" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="TOP_CENTER">
+                     <graphic>
+                        <ImageView fitHeight="37.0" fitWidth="37.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true" translateX="-7.0">
+                           <image>
+                              <Image url="@../images/qr-code-white-128px.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></JFXButton>
                       </children>
                <padding>
                   <Insets bottom="10.0" />
@@ -205,4 +212,7 @@
             </children>
         </VBox>
     </children>
+   <padding>
+      <Insets bottom="10.0" top="10.0" />
+   </padding>
 </AnchorPane>
