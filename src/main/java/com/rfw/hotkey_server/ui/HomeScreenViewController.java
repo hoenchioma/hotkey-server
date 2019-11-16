@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.rfw.hotkey_server.util.Utils.getLocalIpAddress;
@@ -45,10 +46,6 @@ public class HomeScreenViewController implements Initializable {
     private Label connectionTypeLabelID;
 
     private Server server;
-
-    public static Parent getRoot() throws IOException {
-        return FXMLLoader.load(HomeScreenViewController.class.getResource("/fxml/HomeScreenView.fxml"));
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -82,12 +79,6 @@ public class HomeScreenViewController implements Initializable {
         connectedDeviceLabelID.setStyle(NOT_CONNECTED_STYLE);
         connectionTypeLabelID.setText("-");
     }
-
-    /**
-     * A method to start server
-     *
-     * @param event
-     */
 
     @FXML
     private void startButtonAction(ActionEvent event) {
@@ -130,6 +121,10 @@ public class HomeScreenViewController implements Initializable {
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         }).start();
+    }
+
+    public static Parent getRoot() throws IOException {
+        return FXMLLoader.load(HomeScreenViewController.class.getResource("/fxml/HomeScreenView.fxml"));
     }
 }
 
