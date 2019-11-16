@@ -20,8 +20,13 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import static com.rfw.hotkey_server.util.Utils.getLocalIpAddress;
+
+/**
+ * @author Shadman Wadith
+ * @version 1.0
+ * @since 2018-07-01
+ */
 
 public class HomeScreenViewController implements Initializable {
     private static final Logger LOGGER = Logger.getLogger(HomeScreenViewController.class.getName());
@@ -80,6 +85,10 @@ public class HomeScreenViewController implements Initializable {
         connectionTypeLabelID.setText("-");
     }
 
+    /**
+     * A method to start server
+     * @param event
+     */
     @FXML
     private void startButtonAction(ActionEvent event) {
         if (!server.isRunning()) {

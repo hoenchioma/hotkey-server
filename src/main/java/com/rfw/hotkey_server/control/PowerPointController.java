@@ -8,6 +8,12 @@ import java.awt.event.KeyEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @author Shadman Wadith
+ * @version 1.0
+ * @since 2018-07-01
+ */
+
 public class PowerPointController {
     private static final Logger LOGGER = Logger.getLogger(PowerPointController.class.getName());
     private Robot robot;
@@ -20,6 +26,7 @@ public class PowerPointController {
             JOptionPane.showMessageDialog(null, "Error Occurred!");
         }
     }
+
     public void keyPress(int keyCode) {
         robot.keyPress(keyCode);
     }
@@ -34,19 +41,25 @@ public class PowerPointController {
         keyRelease(keyCode);
     }
 
+    /**
+     * method to control presentation slides
+     *
+     * @param keyword
+     */
+
     public void pressModifierButton(String keyword) {
         switch (keyword) {
-            case "beginning" :
+            case "beginning":
                 type(KeyEvent.VK_F5);
                 break;
-            case "current" :
+            case "current":
                 keyPress(KeyEvent.VK_SHIFT);
                 keyPress(KeyEvent.VK_F5);
                 robot.delay(10);
                 keyRelease(KeyEvent.VK_F5);
                 keyRelease(KeyEvent.VK_SHIFT);
                 break;
-            case "ESC" :
+            case "ESC":
                 type(KeyEvent.VK_ESCAPE);
                 break;
             case "UP":
@@ -63,14 +76,13 @@ public class PowerPointController {
                 break;
         }
     }
+
     public void handleIncomingPacket(JSONObject packet) {
         String action = packet.getString("action");
         switch (action) {
 
-            case "modifier" :
+            case "modifier":
                 pressModifierButton(packet.getString("key"));
-
-                // TODO: (Wadith) implement other actions
             default:
                 LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action\n");
         }
