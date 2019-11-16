@@ -16,6 +16,11 @@ import java.util.logging.Logger;
 
 import static com.rfw.hotkey_server.util.Utils.showQRCode;
 
+/**
+ * Server for hosting bluetooth connection
+ *
+ * @author Raheeb Hassan
+ */
 public class BluetoothServer implements Server {
     private static final Logger LOGGER = Logger.getLogger(BluetoothServer.class.getName());
 
@@ -47,10 +52,19 @@ public class BluetoothServer implements Server {
         return LocalDevice.isPowerOn();
     }
 
+    /**
+     * Get the bluetooth name of the server device
+     */
     public static String getFriendlyName() throws BluetoothStateException {
         return LocalDevice.getLocalDevice().getFriendlyName();
     }
 
+    /**
+     * Get the bluetooth mac address of the server bluetooth device
+     *
+     * The address is formatted in the following format
+     * MM:MM:MM:SS:SS:SS
+     */
     public String getBluetoothAddress() throws BluetoothStateException {
         String rawAddress = LocalDevice.getLocalDevice().getBluetoothAddress();
         return colonifyAddress(rawAddress);

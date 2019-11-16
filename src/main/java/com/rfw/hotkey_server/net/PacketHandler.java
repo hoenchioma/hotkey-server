@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 
 /**
  * Class for handling JSON packets received from client
+ *
+ * @author Raheeb Hassan
  */
 public class PacketHandler {
     private static final Logger LOGGER = Logger.getLogger(PacketHandler.class.getName());

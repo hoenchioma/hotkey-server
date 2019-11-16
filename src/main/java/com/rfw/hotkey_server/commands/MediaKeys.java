@@ -2,12 +2,18 @@ package com.rfw.hotkey_server.commands;
 
 /**
  * JNI class for using native bridge to execute media keys
+ *
+ * @author Raheeb Hassan
  */
 public class MediaKeys {
     static {
         loadLibrary();
     }
 
+    /**
+     * load the native library
+     * (based on OS and JVM architecture)
+     */
     private static void loadLibrary() {
         final String libName = "media-keys";
         final String osName = System.getProperty("os.name").toLowerCase();
