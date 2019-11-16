@@ -1,5 +1,6 @@
 package com.rfw.hotkey_server.control;
 
+import com.rfw.hotkey_server.ui.PPTPointer;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -11,7 +12,8 @@ import java.util.logging.Logger;
 public class PowerPointController {
     private static final Logger LOGGER = Logger.getLogger(PowerPointController.class.getName());
     private Robot robot;
-
+    private PPTPointer pptPointer;
+    private int pointerX,pointerY;
     public PowerPointController() {
         try {
             robot = new Robot();
@@ -19,6 +21,11 @@ public class PowerPointController {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error Occurred!");
         }
+
+        pointerX = 400;
+        pointerY = 400;
+
+        pptPointer = new PPTPointer();
     }
     public void keyPress(int keyCode) {
         robot.keyPress(keyCode);
@@ -69,7 +76,11 @@ public class PowerPointController {
 
             case "modifier" :
                 pressModifierButton(packet.getString("key"));
-
+                break;
+            case "pointer" :
+                pointerX += Integer.parseInt(packet.getString("deltaX"));
+                pointerY += Integer.parseInt(packet.getString("deltaY"));
+                pptPointer.movePointer(pointerX,pointerY);
                 // TODO: (Wadith) implement other actions
             default:
                 LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action\n");
