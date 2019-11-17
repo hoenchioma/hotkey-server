@@ -1,25 +1,27 @@
 package com.rfw.hotkey_server.control;
 
-import com.rfw.hotkey_server.ui.PPTPointer;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PowerPointController {
     private static final Logger LOGGER = Logger.getLogger(PowerPointController.class.getName());
+
+    private static final int PADDING = 5; // pointer window padding
+    private static final int POINTER_SIZE = 30; // size of pointer
+    private static final int POINTER_SPEED = 10; // speed of pointer
+
     private Robot robot;
-   // private PPTPointer pptPointer;
-    private int pointerX,pointerY;
+
+    private JFrame pointerWindow = null;
+    private final Object pointerMonitor = new Object();
+
     public PowerPointController() {
         try {
             robot = new Robot();
@@ -27,28 +29,6 @@ public class PowerPointController {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error Occurred!");
         }
-
-        //primaryStage.setTitle("JavaFX App");
-        Circle circle = new Circle(150.0f, 150.0f, 100.f);
-        circle.setFill(Color.RED);
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        Group group = new Group(circle);
-
-        // create a scene
-        Scene scene = new Scene(group, 500, 300);
-        //stage.initModality(Modality.WINDOW_MODAL);
-        //stage.initModality(Modality.NONE);
-        stage.setScene(scene);
-        stage.setAlwaysOnTop(true);
-        stage.show();
-        stage.showAndWait();
-
-        //stage.showAndWait();
-        pointerX = 400;
-        pointerY = 400;
-
-        //pptPointer = new PPTPointer();
     }
     public void keyPress(int keyCode) {
         robot.keyPress(keyCode);
@@ -90,7 +70,6 @@ public class PowerPointController {
                 break;
             case "RIGHT":
                 type(KeyEvent.VK_RIGHT);
-                PPTPointer.movePointer(pointerX+10,pointerY);
                 break;
         }
     }
@@ -102,13 +81,92 @@ public class PowerPointController {
                 pressModifierButton(packet.getString("key"));
                 break;
             case "pointer" :
-                pointerX += Integer.parseInt(packet.getString("deltaX"));
-                pointerY += Integer.parseInt(packet.getString("deltaY"));
-                PPTPointer.movePointer(pointerX,pointerY);
-                LOGGER.log(Level.SEVERE,pointerX+","+pointerY);
-                // TODO: (Wadith) implement other actions
+//                pointerX += Integer.parseInt(packet.getString("deltaX"));
+//                pointerY += Integer.parseInt(packet.getString("deltaY"));
+//                PPTPointer.movePointer(pointerX,pointerY);
+//                LOGGER.log(Level.SEVERE,pointerX+","+pointerY);
+//                // TODO: (Wadith) implement other actions
             default:
                 LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action\n");
         }
+    }
+
+    private void showPointer() {
+        synchronized (pointerMonitor) {
+            pointerWindow = makePointerWindow();
+        }
+    }
+
+    private void hidePointer() {
+        synchronized (pointerMonitor) {
+            if (pointerWindow != null) {
+                pointerWindow.dispose();
+                pointerWindow = null;
+            }
+        }
+    }
+
+    private void movePointer(int deltaX, int deltaY) {
+        SwingUtilities.invokeLater(() -> {
+            synchronized (pointerMonitor) {
+                if (pointerWindow != null) {
+                    JFrame window = pointerWindow;
+                    window.setLocation(
+                            window.getLocation().x + deltaX,
+                            window.getLocation().y + deltaY
+                    );
+                }
+            }
+        });
+    }
+
+    private static JFrame makePointerWindow() {
+        JFrame window = new JFrame() {
+            @Override
+            public void paint(Graphics g) {
+                g.setColor(Color.RED);
+                g.fillOval(PADDING, PADDING, POINTER_SIZE / 2, POINTER_SIZE / 2);
+            }
+        };
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                window.setUndecorated(true); // remove border and title bar
+                window.setAlwaysOnTop(true); // make window always appear on top
+                window.setBackground(new Color(0, 0, 0, 0)); // make background transparent
+                window.setSize(POINTER_SIZE + PADDING * 2, POINTER_SIZE + PADDING * 2);
+    //            window.pack();
+                window.setLocationRelativeTo(null); // put window at the center of screen
+                window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // set window to not close application when disposed
+                window.setVisible(true);
+            });
+        } catch (InterruptedException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return window;
+    }
+
+    public static void main(String[] args) {
+        PowerPointController powerPointController = new PowerPointController();
+        powerPointController.showPointer();
+        JFrame window = powerPointController.pointerWindow;
+
+        // code to move window using arrow keys (for testing purposes)
+        window.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {}
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_LEFT:  powerPointController.movePointer(-POINTER_SPEED, 0); break;
+                    case KeyEvent.VK_RIGHT: powerPointController.movePointer(POINTER_SPEED, 0); break;
+                    case KeyEvent.VK_UP:    powerPointController.movePointer(0, -POINTER_SPEED); break;
+                    case KeyEvent.VK_DOWN:  powerPointController.movePointer(0, POINTER_SPEED); break;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {}
+        });
     }
 }
