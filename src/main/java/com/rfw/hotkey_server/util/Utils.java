@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
@@ -162,15 +163,21 @@ public final class Utils {
      * @param image the image in byte array form
      */
     public static @Nonnull JFrame showImageInWindow(byte[] image) {
-        ImageIcon icon = new ImageIcon(image);
         JFrame frame = new JFrame();
-        frame.setTitle("Scan this");
-        JLabel label = new JLabel(icon);
-        frame.add(label);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                ImageIcon icon = new ImageIcon(image);
+                frame.setTitle("Scan this");
+                JLabel label = new JLabel(icon);
+                frame.add(label);
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.pack();
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            });
+        } catch (InterruptedException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
         return frame;
     }
 
