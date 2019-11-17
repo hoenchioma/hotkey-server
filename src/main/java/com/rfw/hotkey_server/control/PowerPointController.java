@@ -16,7 +16,8 @@ public class PowerPointController {
     private static final int PADDING = 5; // pointer window padding
     private static final int POINTER_SIZE = 30; // size of pointer
     private static final int POINTER_SPEED = 10; // speed of pointer
-
+    private int pointerX;
+    private int pointerY;
     private Robot robot;
 
     private JFrame pointerWindow = null;
@@ -29,6 +30,10 @@ public class PowerPointController {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error Occurred!");
         }
+        LOGGER.log(Level.SEVERE,"run korse");
+
+        //showPointer();
+        //movePointer(100,100);
     }
     public void keyPress(int keyCode) {
         robot.keyPress(keyCode);
@@ -70,6 +75,7 @@ public class PowerPointController {
                 break;
             case "RIGHT":
                 type(KeyEvent.VK_RIGHT);
+                movePointer(10,0);
                 break;
         }
     }
@@ -81,11 +87,17 @@ public class PowerPointController {
                 pressModifierButton(packet.getString("key"));
                 break;
             case "pointer" :
-//                pointerX += Integer.parseInt(packet.getString("deltaX"));
-//                pointerY += Integer.parseInt(packet.getString("deltaY"));
+                pointerX = packet.getInt("deltaX");
+                pointerY = packet.getInt("deltaY");
+                movePointer(pointerX,pointerY);
 //                PPTPointer.movePointer(pointerX,pointerY);
-//                LOGGER.log(Level.SEVERE,pointerX+","+pointerY);
-//                // TODO: (Wadith) implement other actions
+                LOGGER.log(Level.SEVERE,pointerX+","+pointerY);
+                break;
+            case "point":
+                String pointerStatus = packet.getString("key");
+                if(pointerStatus.equals("on")) showPointer();
+                else if(pointerStatus.equals("off")) hidePointer();
+                // TODO: (Wadith) implement other actions
             default:
                 LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action\n");
         }
