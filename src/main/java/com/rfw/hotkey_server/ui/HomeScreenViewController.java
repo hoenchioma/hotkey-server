@@ -21,6 +21,7 @@ import javafx.scene.paint.Paint;
 
 import javax.annotation.Nullable;
 import javax.bluetooth.BluetoothStateException;
+import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -67,6 +68,8 @@ public class HomeScreenViewController implements Initializable {
     private Server server;
     private ConnectionType serverType = ConnectionType.WIFI;
     private boolean menuIsShowing = false;
+
+    private JFrame qrCodeWindow;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -212,6 +215,7 @@ public class HomeScreenViewController implements Initializable {
             field2value.setText("-");
 
             generateQRCodeButton.setDisable(true);
+            closeQRCodeWindow();
         } catch (IOException e) {
             new Alert(Alert.AlertType.ERROR, e.getLocalizedMessage()).show();
             e.printStackTrace();
@@ -270,16 +274,32 @@ public class HomeScreenViewController implements Initializable {
     private void onClientConnect(String deviceName) {
         connectedDeviceLabel.setText(deviceName);
         connectedDeviceLabel.setTextFill(CONNECTED_COLOR);
+        closeQRCodeWindow();
     }
 
     private void onClientDisconnect() {
         connectedDeviceLabel.setText(NOT_CONNECTED_TEXT);
         connectedDeviceLabel.setTextFill(BASE_COLOR);
+        closeQRCodeWindow();
     }
 
     @FXML
     private void generateQRCodeAction(ActionEvent event) {
-        new Thread(() -> showQRCode(server.getQRCodeInfo(), 500, 500)).start();
+        new Thread(() -> {
+            closeQRCodeWindow();
+            showQRCodeWindow();
+        }).start();
+    }
+
+    private synchronized void showQRCodeWindow() {
+        qrCodeWindow = showQRCode(server.getQRCodeInfo(), 500, 500);
+    }
+
+    private synchronized void closeQRCodeWindow() {
+        if (qrCodeWindow != null) {
+            qrCodeWindow.dispose();
+            qrCodeWindow = null;
+        }
     }
 
     public static Parent getRoot() throws IOException {

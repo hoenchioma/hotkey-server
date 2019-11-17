@@ -3,6 +3,7 @@ package com.rfw.hotkey_server.util;
 import net.glxn.qrgen.core.image.ImageType;
 import net.glxn.qrgen.javase.QRCode;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -160,7 +161,7 @@ public final class Utils {
      * Create a swing window to show a single image
      * @param image the image in byte array form
      */
-    public static void showImageInWindow(byte[] image) {
+    public static @Nonnull JFrame showImageInWindow(byte[] image) {
         ImageIcon icon = new ImageIcon(image);
         JFrame frame = new JFrame();
         frame.setTitle("Scan this");
@@ -170,6 +171,7 @@ public final class Utils {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        return frame;
     }
 
     /**
@@ -189,7 +191,7 @@ public final class Utils {
      * show the given string as a QR code (in swing window)
      * @param code String to convert to a QR code
      */
-    public static void showQRCode(String code, int imageSizeX, int imageSizeY) {
-        showImageInWindow(makeQRCode(code, imageSizeX, imageSizeY, ImageType.JPG));
+    public static @Nonnull JFrame showQRCode(String code, int imageSizeX, int imageSizeY) {
+        return showImageInWindow(makeQRCode(code, imageSizeX, imageSizeY, ImageType.JPG));
     }
 }
