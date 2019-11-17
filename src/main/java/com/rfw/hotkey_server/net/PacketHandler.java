@@ -1,6 +1,7 @@
 package com.rfw.hotkey_server.net;
 
 import com.rfw.hotkey_server.control.*;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -37,6 +38,13 @@ public class PacketHandler {
             case "liveScreen":  liveScreenController.handleIncomingPacket(packet);  break;
             case "media":       mediaController.handleIncomingPacket(packet);       break;
             case "macro":       macroController.handleIncomingPacket(packet);       break;
+            case "ping":
+                try {
+                    if (packet.getBoolean("pingBack")) {
+                        connectionHandler.sendPacket(new JSONObject().put("type", "ping"));
+                    }
+                } catch (JSONException ignored) {}
+                break;
             default:
                 LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type " + packetType + "\n");
         }
