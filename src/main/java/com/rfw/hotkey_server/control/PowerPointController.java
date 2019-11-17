@@ -10,8 +10,6 @@ import java.util.logging.Logger;
 
 /**
  * @author Shadman Wadith
- * @version 1.0
- * @since 2018-07-01
  */
 
 public class PowerPointController {
