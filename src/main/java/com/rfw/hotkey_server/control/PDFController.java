@@ -43,9 +43,6 @@ public class PDFController {
     /**
      * platform == 1 means Adobe Acrobat Reader Command
      * platform == 2 means Evince PDF Reader Command
-     *
-     * @param keyword
-     * @param platform
      */
     public void pressModifierButton(String keyword, String platform) {
         switch (keyword) {

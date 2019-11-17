@@ -41,8 +41,6 @@ public class PowerPointController {
 
     /**
      * method to control presentation slides
-     *
-     * @param keyword
      */
 
     public void pressModifierButton(String keyword) {
