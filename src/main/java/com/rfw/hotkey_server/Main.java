@@ -1,6 +1,7 @@
 package com.rfw.hotkey_server;
 
 import com.rfw.hotkey_server.ui.HomeScreenViewController;
+import com.rfw.hotkey_server.ui.PPTPointer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Parent;
@@ -10,6 +11,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+   // public PPTPointer pptPointer = new PPTPointer();
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = HomeScreenViewController.getRoot();
@@ -24,6 +26,7 @@ public class Main extends Application {
         });
         stage.setScene(scene);
         stage.show();
+        PPTPointer.movePointer(100,100);
 //        stage.setResizable(false);
     }
 

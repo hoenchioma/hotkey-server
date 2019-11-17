@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 public class PowerPointController {
     private static final Logger LOGGER = Logger.getLogger(PowerPointController.class.getName());
     private Robot robot;
-    private PPTPointer pptPointer;
+   // private PPTPointer pptPointer;
     private int pointerX,pointerY;
     public PowerPointController() {
         try {
@@ -25,7 +25,7 @@ public class PowerPointController {
         pointerX = 400;
         pointerY = 400;
 
-        pptPointer = new PPTPointer();
+        //pptPointer = new PPTPointer();
     }
     public void keyPress(int keyCode) {
         robot.keyPress(keyCode);
@@ -67,6 +67,7 @@ public class PowerPointController {
                 break;
             case "RIGHT":
                 type(KeyEvent.VK_RIGHT);
+                PPTPointer.movePointer(pointerX+10,pointerY);
                 break;
         }
     }
@@ -80,7 +81,8 @@ public class PowerPointController {
             case "pointer" :
                 pointerX += Integer.parseInt(packet.getString("deltaX"));
                 pointerY += Integer.parseInt(packet.getString("deltaY"));
-                pptPointer.movePointer(pointerX,pointerY);
+                PPTPointer.movePointer(pointerX,pointerY);
+                LOGGER.log(Level.SEVERE,pointerX+","+pointerY);
                 // TODO: (Wadith) implement other actions
             default:
                 LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action\n");

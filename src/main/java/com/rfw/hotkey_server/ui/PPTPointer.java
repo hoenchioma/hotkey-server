@@ -4,6 +4,7 @@ package com.rfw.hotkey_server.ui;
 // coordinates of the center and radius
 // as arguments in constructor
 import javafx.application.Application;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
@@ -16,10 +17,13 @@ import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.stage.StageStyle;
 
-public class PPTPointer extends Application {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class PPTPointer extends Application implements Initializable {
 
     // launch the application
-    private Circle circle;
+    private static Circle circle;
     public void start(Stage stage)
     {
         // set title for the stage
@@ -36,8 +40,7 @@ public class PPTPointer extends Application {
         Scene scene = new Scene(group, 500, 300);
         //pane.getChildren().addAll(circle);
         stage.setMaximized(true);
-        circle.setCenterX(100.0f);
-        circle.setCenterY(700.0f);
+        movePointer(800f,500);
         // set the scene
         stage.setScene(scene);
         //stage.setFullScreen(true);
@@ -52,8 +55,15 @@ public class PPTPointer extends Application {
         launch(args);
     }
 
-    public void movePointer(float x,float y){
-        circle.setCenterX(x);
-        circle.setCenterY(y);
+    public static void movePointer(float x,float y){
+        //circle.setCenterX(x);
+        circle.setTranslateX(x);
+        circle.setTranslateY(y);
+        //circle.setCenterY(y);
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
     }
 }
