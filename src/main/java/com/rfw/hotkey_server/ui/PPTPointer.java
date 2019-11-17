@@ -31,7 +31,7 @@ public class PPTPointer extends Application implements Initializable {
         stage.setTitle("creating circle");
 
         // create a circle
-        circle = new Circle(150.0f, 150.0f, 6.f);
+        circle = new Circle(150.0f, 150.0f, 140.f);
         circle.setFill(Color.RED);
         // create a Group
         Group group = new Group(circle);
@@ -39,12 +39,14 @@ public class PPTPointer extends Application implements Initializable {
         // create a scene
         Scene scene = new Scene(group, 500, 300);
         //pane.getChildren().addAll(circle);
-        stage.setMaximized(true);
-        movePointer(800f,500);
+        //stage.setMaximized(true);
+        movePointer(150.0f,150.0f);
         // set the scene
         stage.setScene(scene);
+        stage.setFullScreen(true);
         //stage.setFullScreen(true);
         stage.initStyle(StageStyle.TRANSPARENT);
+
         scene.setFill(Color.TRANSPARENT);
         stage.show();
     }

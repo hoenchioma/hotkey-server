@@ -1,6 +1,12 @@
 package com.rfw.hotkey_server.control;
 
 import com.rfw.hotkey_server.ui.PPTPointer;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -22,6 +28,23 @@ public class PowerPointController {
             JOptionPane.showMessageDialog(null, "Error Occurred!");
         }
 
+        //primaryStage.setTitle("JavaFX App");
+        Circle circle = new Circle(150.0f, 150.0f, 100.f);
+        circle.setFill(Color.RED);
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        Group group = new Group(circle);
+
+        // create a scene
+        Scene scene = new Scene(group, 500, 300);
+        //stage.initModality(Modality.WINDOW_MODAL);
+        //stage.initModality(Modality.NONE);
+        stage.setScene(scene);
+        stage.setAlwaysOnTop(true);
+        stage.show();
+        stage.showAndWait();
+
+        //stage.showAndWait();
         pointerX = 400;
         pointerY = 400;
 

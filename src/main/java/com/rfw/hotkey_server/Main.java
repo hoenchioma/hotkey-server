@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
    // public PPTPointer pptPointer = new PPTPointer();
+    //PPTPointer pptPointer = Loader.getSystemClassLoader();
+
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = HomeScreenViewController.getRoot();
@@ -26,12 +28,13 @@ public class Main extends Application {
         });
         stage.setScene(scene);
         stage.show();
-        PPTPointer.movePointer(100,100);
+        //PPTPointer.movePointer(100,100);
 //        stage.setResizable(false);
     }
 
 
     public static void main(String[] args) {
         launch(args);
+        PPTPointer pptPointer = new PPTPointer();
     }
 }
