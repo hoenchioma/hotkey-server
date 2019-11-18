@@ -1,6 +1,7 @@
 package com.rfw.hotkey_server.net;
 
 import com.rfw.hotkey_server.control.*;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -13,11 +14,11 @@ import java.util.logging.Logger;
 public class PacketHandler {
     private static final Logger LOGGER = Logger.getLogger(PacketHandler.class.getName());
 
-    public PacketHandler(WiFiConnectionHandler connectionHandler) {
+    public PacketHandler(ConnectionHandler connectionHandler) {
         this.connectionHandler = connectionHandler;
     }
 
-    private WiFiConnectionHandler connectionHandler;
+    private ConnectionHandler connectionHandler;
 
     private KeyboardController keyboardController = new KeyboardController();
     private MouseController mouseController = new MouseController();
@@ -30,26 +31,19 @@ public class PacketHandler {
     public void handle(JSONObject packet) {
         String packetType = packet.getString("type");
         switch (packetType) {
-            case "keyboard":
-                keyboardController.handleIncomingPacket(packet);
-                break;
-            case "mouse":
-                mouseController.handleIncomingPacket(packet);
-                break;
-            case "ppt":
-                powerPointController.handleIncomingPacket(packet);
-                break;
-            case "pdf":
-                pdfController.handleIncomingPacket(packet);
-                break;
-            case "liveScreen":
-                liveScreenController.handleIncomingPacket(packet);
-                break;
-            case "media":
-                mediaController.handleIncomingPacket(packet);
-                break;
-            case "macro":
-                macroController.handleIncomingPacket(packet);
+            case "keyboard":    keyboardController.handleIncomingPacket(packet);    break;
+            case "mouse":       mouseController.handleIncomingPacket(packet);       break;
+            case "ppt":         powerPointController.handleIncomingPacket(packet);  break;
+            case "pdf":         pdfController.handleIncomingPacket(packet);         break;
+            case "liveScreen":  liveScreenController.handleIncomingPacket(packet);  break;
+            case "media":       mediaController.handleIncomingPacket(packet);       break;
+            case "macro":       macroController.handleIncomingPacket(packet);       break;
+            case "ping":
+                try {
+                    if (packet.getBoolean("pingBack")) {
+                        connectionHandler.sendPacket(new JSONObject().put("type", "ping"));
+                    }
+                } catch (JSONException ignored) {}
                 break;
             default:
                 LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type " + packetType + "\n");
