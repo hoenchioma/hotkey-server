@@ -2,6 +2,11 @@ package com.rfw.hotkey_server.net;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Enum for specifying type of connection
+ *
+ * @author Raheeb Hassan
+ */
 public enum ConnectionType {
     WIFI,
     BLUETOOTH,

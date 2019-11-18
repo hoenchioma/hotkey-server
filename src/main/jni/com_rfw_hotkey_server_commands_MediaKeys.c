@@ -1,3 +1,9 @@
+// ==========================================
+//  Native source for the JNI interface class
+//  com.rfw.hotkey_server.commands.MediaKeys
+//
+//  Author: Raheeb Hassan
+// ==========================================
 
 #include "com_rfw_hotkey_server_commands_MediaKeys.h"
 #include <jni.h>

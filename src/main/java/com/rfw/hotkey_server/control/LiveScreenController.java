@@ -16,6 +16,11 @@ import java.util.logging.Logger;
 import static com.rfw.hotkey_server.util.Utils.compressToJPEG;
 import static com.rfw.hotkey_server.util.Utils.getPNG;
 
+/**
+ * Controller for sending the live screen feed to the client
+ *
+ * @author Raheeb Hassan
+ */
 public class LiveScreenController {
     private static final Logger LOGGER = Logger.getLogger(LiveScreenController.class.getName());
 

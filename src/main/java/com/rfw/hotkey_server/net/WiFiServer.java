@@ -15,6 +15,11 @@ import java.util.logging.Logger;
 import static com.rfw.hotkey_server.util.Utils.getLocalIpAddress;
 import static com.rfw.hotkey_server.util.Utils.getRemoteSocketAddressAndPort;
 
+/**
+ * Server for hosting WiFi/LAN connection
+ *
+ * @author Raheen Hassan
+ */
 public class WiFiServer implements Server {
     private static final Logger LOGGER = Logger.getLogger(WiFiServer.class.getName());
 

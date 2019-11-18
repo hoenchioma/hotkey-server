@@ -22,6 +22,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Utility class containing useful functions
+ *
+ * @author Raheeb Hassan
+ */
 public final class Utils {
     private static final Logger LOGGER = Logger.getLogger(Utils.class.getName());
 
