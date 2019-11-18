@@ -27,54 +27,71 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import static com.rfw.hotkey_server.util.Utils.getLocalIpAddress;
 import static com.rfw.hotkey_server.util.Utils.showQRCode;
 
 /**
  * @author Shadman Wadith
- * @version 1.0
- * @since 2018-07-01
  */
 
 public class HomeScreenViewController implements Initializable {
     private static final Logger LOGGER = Logger.getLogger(HomeScreenViewController.class.getName());
-    
+
     private static final String STATUS_LABEL_ONLINE = "Online";
     private static final String STATUS_LABEL_OFFLINE = "Offline";
-    
+
     private static final String START_BUTTON_TEXT = "START";
     private static final String STOP_BUTTON_TEXT = "STOP";
 
     private static final String NOT_CONNECTED_TEXT = "Not Connected";
-    
+
     private static final Paint CONNECTED_COLOR = Paint.valueOf("lime");
     private static final Paint BASE_COLOR = Paint.valueOf("white");
     private static final Paint HIGHLIGHT_COLOR = Paint.valueOf("#7289da");
 
-    @FXML private AnchorPane parent;
+    @FXML
+    private AnchorPane parent;
 
-    @FXML private JFXButton startButton;
-    @FXML private JFXButton settingsButton;
-    @FXML private JFXButton generateQRCodeButton;
+    @FXML
+    private JFXButton startButton;
+    @FXML
+    private JFXButton settingsButton;
+    @FXML
+    private JFXButton generateQRCodeButton;
 
-    @FXML private VBox settingsMenu;
-    @FXML private JFXButton menuWiFiButton;
-    @FXML private JFXButton menuBluetoothButton;
+    @FXML
+    private VBox settingsMenu;
+    @FXML
+    private JFXButton menuWiFiButton;
+    @FXML
+    private JFXButton menuBluetoothButton;
 
-    @FXML private Label statusLabel;
-    @FXML private Label connectedDeviceLabel;
-    @FXML private Label connectionTypeLabel;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private Label connectedDeviceLabel;
+    @FXML
+    private Label connectionTypeLabel;
 
-    @FXML private Label field1;
-    @FXML private Label field2;
-    @FXML private Label field1value;
-    @FXML private Label field2value;
+    @FXML
+    private Label field1;
+    @FXML
+    private Label field2;
+    @FXML
+    private Label field1value;
+    @FXML
+    private Label field2value;
 
     private Server server;
     private ConnectionType serverType = ConnectionType.WIFI;
     private boolean menuIsShowing = false;
 
     private JFrame qrCodeWindow;
+
+    public static Parent getRoot() throws IOException {
+        return FXMLLoader.load(HomeScreenViewController.class.getResource("/fxml/HomeScreenView.fxml"));
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -96,10 +113,7 @@ public class HomeScreenViewController implements Initializable {
         if (menuIsShowing) hideMenu();
     }
 
-    /**
-     * A method to start server
-     * @param event
-     */
+
     @FXML
     private void settingsButtonAction(ActionEvent event) {
         if (!menuIsShowing) showMenu();
@@ -167,7 +181,7 @@ public class HomeScreenViewController implements Initializable {
     }
 
     private void clearMenuSelect() {
-        for (Node i: settingsMenu.getChildren()) {
+        for (Node i : settingsMenu.getChildren()) {
             if (i instanceof JFXButton) {
                 ((JFXButton) i).setTextFill(BASE_COLOR);
             }
@@ -309,10 +323,6 @@ public class HomeScreenViewController implements Initializable {
             qrCodeWindow.dispose();
             qrCodeWindow = null;
         }
-    }
-
-    public static Parent getRoot() throws IOException {
-        return FXMLLoader.load(HomeScreenViewController.class.getResource("/fxml/HomeScreenView.fxml"));
     }
 }
 

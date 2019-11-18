@@ -10,8 +10,6 @@ import java.util.logging.Logger;
 
 /**
  * @author Shadman Wadith
- * @version 1.0
- * @since 2018-07-01
  */
 
 public class PDFController {
@@ -43,11 +41,8 @@ public class PDFController {
     }
 
     /**
-     * platform == 1 means Adobe Acrobat Reader Command
-     * platform == 2 means Evince PDF Reader Command
-     *
-     * @param keyword
-     * @param platform
+     * @param keyword button that user presses
+     * @param platform platform == 1 means Adobe Acrobat Reader Command and platform == 2 means Evince PDF Reader Command
      */
     public void pressModifierButton(String keyword, String platform) {
         switch (keyword) {
@@ -122,6 +117,11 @@ public class PDFController {
         }
     }
 
+    /**
+     *
+     * @param number change the page to dedicated page
+     * @param platform evince or Adobe
+     */
     public void gotoPage(String number, String platform) {
 
         LOGGER.log(Level.SEVERE, "platform : " + platform);

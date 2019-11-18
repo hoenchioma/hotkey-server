@@ -12,8 +12,6 @@ import java.util.logging.Logger;
 
 /**
  * @author Shadman Wadith
- * @version 1.0
- * @since 2018-07-01
  */
 
 public class PowerPointController {
@@ -59,7 +57,7 @@ public class PowerPointController {
     /**
      * method to control presentation slides
      *
-     * @param keyword
+     * @param keyword command type
      */
 
     public void pressModifierButton(String keyword) {
