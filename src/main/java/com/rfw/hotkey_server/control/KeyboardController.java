@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import static java.awt.event.KeyEvent.*;
 
 /**
+ * A class to handle Keyboard actions from clients
  * @author Shadman Wadith
  */
 public class KeyboardController {
@@ -426,6 +427,10 @@ public class KeyboardController {
         }
     }
 
+    /**
+     * Handles incoming packet from client
+     * @param packet JSON packet
+     */
     public void handleIncomingPacket(JSONObject packet) {
         String action = packet.getString("action");
         switch (action) {

@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
+ /** A class to handle ppt slides
  * @author Shadman Wadith
  */
 public class PowerPointController {
