@@ -3,9 +3,11 @@ package com.rfw.hotkey_server.control;
 import org.imgscalr.Scalr;
 import org.json.JSONObject;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -13,13 +15,13 @@ import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.rfw.hotkey_server.util.Utils.compressToJPEG;
-import static com.rfw.hotkey_server.util.Utils.getPNG;
+import static com.rfw.hotkey_server.util.Image.*;
 
 public class LiveScreenController {
     private static final Logger LOGGER = Logger.getLogger(LiveScreenController.class.getName());
 
     private static final int CONNECTION_TIMEOUT = 1000;
+    private static final int CURSOR_SIZE = 50;
 
     private Robot robot;
 
@@ -103,12 +105,34 @@ public class LiveScreenController {
 
         @Override
         public void run() {
+            BufferedImage cursor = null;
+            try {
+                 cursor = ImageIO.read(new File(
+                        getClass().getClassLoader().getResource("images/cursor.png").getFile()
+                ));
+                 cursor = Scalr.resize(cursor, Scalr.Method.BALANCED, CURSOR_SIZE, CURSOR_SIZE);
+            } catch (IOException | NullPointerException e) {
+                LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error reading cursor image file");
+                e.printStackTrace();
+            }
             while (running) {
                 try {
+                    // capture screenshot
                     BufferedImage screenshot = robot.createScreenCapture(
                             new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+
+                    // place a fake cursor icon on screenshot
+                    if (cursor != null) {
+                        int cursorPosX = MouseInfo.getPointerInfo().getLocation().x;
+                        int cursorPosY = MouseInfo.getPointerInfo().getLocation().y;
+                        addImage(screenshot, cursor, 1.0f, cursorPosX, cursorPosY);
+                    }
+
+                    // resize screenshot according to target device
                     BufferedImage resizedSS = Scalr.resize(screenshot,
                             Scalr.Method.BALANCED, screenSizeX, screenSizeY);
+
+
                     byte[] imageBuff = compressRatio == 1.0f ? getPNG(resizedSS) : compressToJPEG(resizedSS, compressRatio);
 
 //                    LOGGER.log(Level.INFO, "LiveScreenSender.run: image size: " + imageBuff.length + " " + (int) imageBuff.length);

@@ -12,8 +12,8 @@ import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.rfw.hotkey_server.util.Utils.getLocalIpAddress;
-import static com.rfw.hotkey_server.util.Utils.getRemoteSocketAddressAndPort;
+import static com.rfw.hotkey_server.util.Device.getLocalIpAddress;
+import static com.rfw.hotkey_server.util.Device.getRemoteSocketAddressAndPort;
 
 public class WiFiServer implements Server {
     private static final Logger LOGGER = Logger.getLogger(WiFiServer.class.getName());
