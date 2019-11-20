@@ -19,13 +19,8 @@ public class MacroController
 
     private Robot robot;
 
-    public MacroController() {
-        try {
-            robot = new Robot();
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error Occurred!");
-        }
+    public MacroController() throws AWTException {
+        robot = new Robot();
     }
 
     public void handleIncomingPacket(JSONObject packet) {

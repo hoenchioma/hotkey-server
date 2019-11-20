@@ -2,7 +2,6 @@ package com.rfw.hotkey_server.control;
 
 import org.json.JSONObject;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.logging.Level;
@@ -11,19 +10,13 @@ import java.util.logging.Logger;
 /**
  * @author Shadman Wadith
  */
-
 public class PDFController {
-
     private static final Logger LOGGER = Logger.getLogger(PowerPointController.class.getName());
+
     private Robot robot;
 
-    public PDFController() {
-        try {
-            robot = new Robot();
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error Occurred!");
-        }
+    public PDFController() throws AWTException {
+        robot = new Robot();
     }
 
     public void keyPress(int keyCode) {
@@ -137,15 +130,19 @@ public class PDFController {
             keyRelease(KeyEvent.VK_L);
 
         }
-
+        String checkNumber = " ";
         int pageNumber;
+        //LOGGER.log(Level.SEVERE,"From Client : "+number+ "  and Length "+number.length());
         for (int i = 0; i < number.length(); i++) {
 
             pageNumber = (int) number.charAt(i);
+          //  LOGGER.log(Level.SEVERE,"Ascii "+String.valueOf(pageNumber));
             keyPress(pageNumber);
+            checkNumber+= number.charAt(i);
             robot.delay(20);
             keyRelease(pageNumber);
         }
+       // LOGGER.log(Level.SEVERE,"Goto page : "+checkNumber);
         keyPress(KeyEvent.VK_ENTER);
         robot.delay(20);
         keyRelease(KeyEvent.VK_ENTER);
@@ -163,7 +160,6 @@ public class PDFController {
             case "page":
                 gotoPage(key, platform);
                 break;
-
             default:
                 LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action\n");
         }

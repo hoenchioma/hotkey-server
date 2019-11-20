@@ -13,19 +13,13 @@ import static java.awt.event.KeyEvent.*;
 /**
  * @author Shadman Wadith
  */
-
 public class KeyboardController {
     private static final Logger LOGGER = Logger.getLogger(KeyboardController.class.getName());
 
     private Robot robot;
 
-    public KeyboardController() {
-        try {
-            robot = new Robot();
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error Occurred!");
-        }
+    public KeyboardController() throws AWTException {
+        robot = new Robot();
     }
 
     public void keyPress(int keyCode) {

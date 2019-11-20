@@ -14,13 +14,8 @@ public class MouseController
 
     private Robot robot;
 
-    public MouseController() {
-        try {
-            robot = new Robot();
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error Occurred!");
-        }
+    public MouseController() throws AWTException {
+        robot = new Robot();
     }
 
     public void handleIncomingPacket(JSONObject packet) {
