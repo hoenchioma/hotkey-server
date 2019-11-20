@@ -6,6 +6,11 @@ import org.json.JSONObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Controller for handling and executing media key commands
+ *
+ * @author Raheeb Hassan
+ */
 public class MediaController {
     private static final Logger LOGGER = Logger.getLogger(MediaController.class.getName());
 

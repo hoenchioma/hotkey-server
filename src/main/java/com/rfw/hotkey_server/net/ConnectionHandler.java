@@ -9,6 +9,11 @@ import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The thread which handles communication with the client
+ *
+ * @author Raheeb Hassan
+ */
 public class ConnectionHandler extends Thread {
     private static final Logger LOGGER = Logger.getLogger(ConnectionHandler.class.getName());
 

@@ -10,6 +10,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @author Shadman Wadith
+ */
 public class PowerPointController {
     private static final Logger LOGGER = Logger.getLogger(PowerPointController.class.getName());
 
@@ -44,17 +47,17 @@ public class PowerPointController {
 
     private void pressModifierButton(String keyword) {
         switch (keyword) {
-            case "beginning" :
+            case "beginning":
                 type(KeyEvent.VK_F5);
                 break;
-            case "current" :
+            case "current":
                 keyPress(KeyEvent.VK_SHIFT);
                 keyPress(KeyEvent.VK_F5);
                 robot.delay(10);
                 keyRelease(KeyEvent.VK_F5);
                 keyRelease(KeyEvent.VK_SHIFT);
                 break;
-            case "ESC" :
+            case "ESC":
                 type(KeyEvent.VK_ESCAPE);
                 break;
             case "UP":
@@ -68,15 +71,15 @@ public class PowerPointController {
                 break;
             case "RIGHT":
                 type(KeyEvent.VK_RIGHT);
-                movePointer(10,0);
                 break;
         }
     }
+
     public void handleIncomingPacket(JSONObject packet) {
         String action = packet.getString("action");
         switch (action) {
 
-            case "modifier" :
+            case "modifier":
                 pressModifierButton(packet.getString("key"));
                 break;
             case "pointer" :
