@@ -8,8 +8,13 @@ import java.awt.event.InputEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MouseController
-{
+/**
+ * Controller for handling and executing mouse actions.
+ *
+ * @author Farhan Kabir
+ */
+
+public class MouseController {
     private static final Logger LOGGER = Logger.getLogger(MouseController.class.getName());
 
     private Robot robot;
@@ -25,16 +30,16 @@ public class MouseController
                 Point mousePointer = MouseInfo.getPointerInfo().getLocation();
                 robot.mouseMove(mousePointer.x + packet.getInt("deltaX"), mousePointer.y + packet.getInt("deltaY"));
                 break;
-            case "LeftClick" :
+            case "LeftClick":
                 robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
                 robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
                 break;
-            case "RightClick" :
+            case "RightClick":
                 robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
                 robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
                 break;
             case "ScrollMove":
-                robot.mouseWheel((int)(packet.getInt("deltaY")/30));
+                robot.mouseWheel((int) (packet.getInt("deltaY") / 30));
                 break;
             case "ScrollClick":
                 robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
