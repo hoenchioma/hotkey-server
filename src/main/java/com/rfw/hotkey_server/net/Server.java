@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.rfw.hotkey_server.util.Utils.getDeviceName;
+import static com.rfw.hotkey_server.util.Device.getDeviceName;
 
 /**
  * Server for hosting connection

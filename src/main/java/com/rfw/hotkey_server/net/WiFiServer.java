@@ -12,8 +12,8 @@ import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.rfw.hotkey_server.util.Utils.getLocalIpAddress;
-import static com.rfw.hotkey_server.util.Utils.getRemoteSocketAddressAndPort;
+import static com.rfw.hotkey_server.util.Device.getLocalIpAddress;
+import static com.rfw.hotkey_server.util.Device.getRemoteSocketAddressAndPort;
 
 /**
  * Server for hosting WiFi/LAN connection
