@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.awt.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
 public class PacketHandler {
     private static final Logger LOGGER = Logger.getLogger(PacketHandler.class.getName());
 
-    public PacketHandler(ConnectionHandler connectionHandler) {
+    public PacketHandler(ConnectionHandler connectionHandler) throws AWTException {
         this.connectionHandler = connectionHandler;
     }
 
@@ -59,5 +60,6 @@ public class PacketHandler {
 
     public void exit() {
         liveScreenController.stop();
+        powerPointController.stop();
     }
 }
