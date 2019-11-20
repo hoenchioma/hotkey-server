@@ -166,7 +166,6 @@ public class PDFController {
             case "page":
                 gotoPage(key,platform);
                 break;
-            // TODO: (Wadith) implement other actions
             default:
                 LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action\n");
         }
