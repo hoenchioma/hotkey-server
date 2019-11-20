@@ -25,13 +25,8 @@ public class LiveScreenController {
 
     private LiveScreenSender liveScreenSender;
 
-    public LiveScreenController() {
-        try {
-            robot = new Robot();
-        } catch (AWTException e) {
-            e.printStackTrace();
-            // TODO: handle robot exception
-        }
+    public LiveScreenController() throws AWTException {
+        robot = new Robot();
     }
 
     public void stop() {

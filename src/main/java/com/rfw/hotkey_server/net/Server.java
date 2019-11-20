@@ -104,7 +104,7 @@ public interface Server {
 
                 if (!serverUuid.equals(SERVER_UUID) || serverVersion != SERVER_VERSION) {
                     LOGGER.log(Level.SEVERE, "Server.handleConnection: client mismatch with server");
-                    throw new IllegalArgumentException("wrong server uuid and/or version");
+                    throw new IllegalArgumentException("Wrong server uuid and/or version");
                 }
 
                 JSONObject responsePacket = new JSONObject()
@@ -129,9 +129,10 @@ public interface Server {
                             identifier
                     ));
                     responsePacket.put("success", false);
+                    throw new IllegalStateException(e);
+                } finally {
+                    out.println(responsePacket);
                 }
-
-                out.println(responsePacket);
 
             } else if (packetType.equals("ping")) {
                 JSONObject responsePacket = getServerInfoPacket();
@@ -143,7 +144,7 @@ public interface Server {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-        } catch (IOException | IllegalArgumentException e) {
+        } catch (IOException | IllegalArgumentException | IllegalStateException e) {
             onError(e);
             LOGGER.log(Level.SEVERE, "Server.handleConnection: error handling connection\n");
         }

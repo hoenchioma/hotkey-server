@@ -22,12 +22,8 @@ public class PowerPointController {
     private JFrame pointerWindow = null;
     private final Object pointerMonitor = new Object();
 
-    public PowerPointController() {
-        try {
-            robot = new Robot();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public PowerPointController() throws AWTException {
+        robot = new Robot();
 
         //showPointer();
         //movePointer(100,100);
@@ -153,7 +149,7 @@ public class PowerPointController {
         return window;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws AWTException {
         PowerPointController powerPointController = new PowerPointController();
         powerPointController.showPointer();
         JFrame window = powerPointController.pointerWindow;

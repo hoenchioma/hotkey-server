@@ -2,6 +2,7 @@ package com.rfw.hotkey_server.net;
 
 import org.json.JSONObject;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,7 +21,7 @@ public class ConnectionHandler extends Thread {
 
     private volatile boolean stop = true;
 
-    ConnectionHandler(BufferedReader in, PrintWriter out, String clientName, Server server) {
+    ConnectionHandler(BufferedReader in, PrintWriter out, String clientName, Server server) throws AWTException {
         this.server = server;
         this.in = in;
         this.out = out;

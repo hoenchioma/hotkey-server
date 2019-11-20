@@ -9,17 +9,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PDFController {
-
     private static final Logger LOGGER = Logger.getLogger(PowerPointController.class.getName());
+
     private Robot robot;
 
-    public PDFController() {
-        try {
-            robot = new Robot();
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error Occurred!");
-        }
+    public PDFController() throws AWTException {
+        robot = new Robot();
     }
 
     public void keyPress(int keyCode) {
