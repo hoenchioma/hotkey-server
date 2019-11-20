@@ -8,6 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * A class to handle PDF Reader (Adobe Acrobat Reader and Evince Reader)
+ *
  * @author Shadman Wadith
  */
 public class PDFController {
@@ -110,6 +112,11 @@ public class PDFController {
         }
     }
 
+    /**
+     *
+     * @param number page number of which use wants to go
+     * @param platform Adobe Acrobat Reader as 1 or Evince reader as 2
+     */
     public void gotoPage(String number, String platform) {
 
         LOGGER.log(Level.SEVERE, "platform : " + platform);
@@ -148,6 +155,10 @@ public class PDFController {
         keyRelease(KeyEvent.VK_ENTER);
     }
 
+    /**
+     * Handles incoming packet from client side
+     * @param packet JSON Packet
+     */
     public void handleIncomingPacket(JSONObject packet) {
         String action = packet.getString("action");
         String key = packet.getString("key");
