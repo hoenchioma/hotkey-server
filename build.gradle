@@ -1,10 +1,7 @@
-//import org.gradle.internal.jvm.Jvm
-
 plugins {
     id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.8'
-//    id 'c'
 }
 
 group 'com.rfw.hotkey_server'
@@ -58,51 +55,3 @@ dependencies {
 run {
     systemProperty "java.library.path", file("$projectDir/libs/native").absolutePath
 }
-
-//// native bridge library
-//model {
-//    components {
-//        bridge(NativeLibrarySpec) {
-//            sources {
-//                c {
-//                    source {
-//                        srcDir 'src/main/jni'
-//                        include "**/*.c"
-//                    }
-//                }
-//            }
-//            binaries.all {
-//                if (targetPlatform.operatingSystem.macOsX) {
-//                    cCompiler.args '-I', "${Jvm.current().javaHome}/include"
-//                    cCompiler.args '-I', "${Jvm.current().javaHome}/include/darwin"
-//                    cCompiler.args '-mmacosx-version-min=10.4'
-//                    linker.args '-mmacosx-version-min=10.4'
-//                    linker.args '-lxdo'
-//                } else if (targetPlatform.operatingSystem.linux) {
-//                    cCompiler.args '-I', "${Jvm.current().javaHome}/include"
-//                    cCompiler.args '-I', "${Jvm.current().javaHome}/include/linux"
-//                    cCompiler.args '-D_FILE_OFFSET_BITS=64'
-//                    linker.args '-lxdo'
-//                } else if (targetPlatform.operatingSystem.windows) {
-//                    cCompiler.args "-I${Jvm.current().javaHome}/include"
-//                    cCompiler.args "-I${Jvm.current().javaHome}/include/win32"
-//                    linker.args "User32.lib"
-//                } else if (targetPlatform.operatingSystem.freeBSD) {
-//                    cCompiler.args '-I', "${Jvm.current().javaHome}/include"
-//                    cCompiler.args '-I', "${Jvm.current().javaHome}/include/freebsd"
-//                    linker.args '-lxdo'
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//// task to copy compiled native libraries to lib folder
-//// (do this once after making changes in the native libraries)
-//task copyBridgeLib(type: Copy) {
-//    file("libs").mkdirs()
-//    from("$buildDir/libs/bridge/shared")
-//    into("libs")
-////    from("$buildDir/libs/bridge/static")
-////    into("libs")
-//}

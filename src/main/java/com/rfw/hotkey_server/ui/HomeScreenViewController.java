@@ -31,35 +31,42 @@ import java.util.logging.Logger;
 import static com.rfw.hotkey_server.util.Device.getLocalIpAddress;
 import static com.rfw.hotkey_server.util.Utils.showQRCode;
 
+/**
+ * FXML controller for the home screen scene
+ *
+ * @author Shadman Wadith
+ * @author Raheeb Hassan
+ */
 public class HomeScreenViewController implements Initializable {
     private static final Logger LOGGER = Logger.getLogger(HomeScreenViewController.class.getName());
-    
+
     private static final String STATUS_LABEL_ONLINE = "Online";
     private static final String STATUS_LABEL_OFFLINE = "Offline";
-    
+
     private static final String START_BUTTON_TEXT = "START";
     private static final String STOP_BUTTON_TEXT = "STOP";
 
     private static final String NOT_CONNECTED_TEXT = "Not Connected";
-    
+
     private static final Paint CONNECTED_COLOR = Paint.valueOf("lime");
     private static final Paint BASE_COLOR = Paint.valueOf("white");
     private static final Paint HIGHLIGHT_COLOR = Paint.valueOf("#7289da");
 
-    @FXML private AnchorPane parent;
+    @FXML private AnchorPane parent; // parent anchor pane of the scene
 
     @FXML private JFXButton startButton;
-    @FXML private JFXButton settingsButton;
+    @FXML private JFXButton settingsButton; // the three dot button
     @FXML private JFXButton generateQRCodeButton;
 
-    @FXML private VBox settingsMenu;
+    @FXML private VBox settingsMenu; // Vbox containing server connection options
     @FXML private JFXButton menuWiFiButton;
     @FXML private JFXButton menuBluetoothButton;
 
-    @FXML private Label statusLabel;
-    @FXML private Label connectedDeviceLabel;
-    @FXML private Label connectionTypeLabel;
+    @FXML private Label statusLabel; // label for server status (online/offline)
+    @FXML private Label connectedDeviceLabel; // name of connected device (otherwise "Not Connected")
+    @FXML private Label connectionTypeLabel; // label for server connection type (WiFi/Bluetooth)
 
+    // extra fields whose values depend on which connection mode is selected
     @FXML private Label field1;
     @FXML private Label field2;
     @FXML private Label field1value;
@@ -97,6 +104,9 @@ public class HomeScreenViewController implements Initializable {
         else hideMenu();
     }
 
+    /**
+     * onAction for the WiFi menu item in settingsMenu
+     */
     @FXML
     private void menuWiFiAction(ActionEvent event) {
         if (server != null && server.isRunning()) {
@@ -105,7 +115,7 @@ public class HomeScreenViewController implements Initializable {
             serverType = ConnectionType.WIFI;
 
             clearMenuSelect(); // clear previous selection highlight
-            menuWiFiButton.setTextFill(HIGHLIGHT_COLOR);
+            menuWiFiButton.setTextFill(HIGHLIGHT_COLOR); // highlight the WiFi button
 
             connectionTypeLabel.setText(serverType.toString());
 
@@ -118,6 +128,9 @@ public class HomeScreenViewController implements Initializable {
         hideMenu();
     }
 
+    /**
+     * onAction for the bluetooth menu item in settingsMenu
+     */
     @FXML
     private void menuBluetoothAction(ActionEvent event) {
         if (server != null && server.isRunning()) {
@@ -128,7 +141,7 @@ public class HomeScreenViewController implements Initializable {
             serverType = ConnectionType.BLUETOOTH;
 
             clearMenuSelect(); // clear previous selection highlight
-            menuBluetoothButton.setTextFill(HIGHLIGHT_COLOR);
+            menuBluetoothButton.setTextFill(HIGHLIGHT_COLOR); // highlight the bluetooth button
 
             connectionTypeLabel.setText(serverType.toString());
 
@@ -145,18 +158,27 @@ public class HomeScreenViewController implements Initializable {
         hideMenu();
     }
 
+    /**
+     * show the server connection type selection menu
+     */
     private void showMenu() {
         settingsMenu.setVisible(true);
         settingsMenu.setDisable(false);
         menuIsShowing = true;
     }
 
+    /**
+     * hide the server connection type selection menu
+     */
     private void hideMenu() {
         settingsMenu.setVisible(false);
         settingsMenu.setDisable(true);
         menuIsShowing = false;
     }
 
+    /**
+     * clear any text previous color change in menu
+     */
     private void clearMenuSelect() {
         for (Node i: settingsMenu.getChildren()) {
             if (i instanceof JFXButton) {
@@ -175,6 +197,10 @@ public class HomeScreenViewController implements Initializable {
         }
     }
 
+    /**
+     * Initialize the server variable
+     * (according to serverType)
+     */
     private void startServer() {
         assert server != null;
         try {
@@ -271,12 +297,19 @@ public class HomeScreenViewController implements Initializable {
         }
     }
 
+    /**
+     * called when a client connects to server
+     * @param deviceName device name of client
+     */
     private void onClientConnect(String deviceName) {
         connectedDeviceLabel.setText(deviceName);
         connectedDeviceLabel.setTextFill(CONNECTED_COLOR);
         closeQRCodeWindow();
     }
 
+    /**
+     * called when a client disconnects from server
+     */
     private void onClientDisconnect() {
         connectedDeviceLabel.setText(NOT_CONNECTED_TEXT);
         connectedDeviceLabel.setTextFill(BASE_COLOR);
