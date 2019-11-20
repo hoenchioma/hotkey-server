@@ -7,7 +7,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-
+/**
+ * The entry point of the application
+ * This starts the server GUI
+ *
+ * @author Raheeb Hassan
+ */
 public class Main extends Application {
 
     @Override
@@ -18,7 +23,7 @@ public class Main extends Application {
 //        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
         stage.setTitle("Hotkey Server");
-        stage.setOnCloseRequest(t -> {
+        stage.setOnCloseRequest(t -> { // force close application when close is pressed
             Platform.exit();
             System.exit(0);
         });
