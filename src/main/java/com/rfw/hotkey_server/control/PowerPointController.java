@@ -177,4 +177,8 @@ public class PowerPointController {
             public void keyReleased(KeyEvent e) {}
         });
     }
+
+    public void stop() {
+        hidePointer();
+    }
 }

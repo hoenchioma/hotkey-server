@@ -57,5 +57,6 @@ public class PacketHandler {
 
     public void exit() {
         liveScreenController.stop();
+        powerPointController.stop();
     }
 }
