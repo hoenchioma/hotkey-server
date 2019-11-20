@@ -16,8 +16,7 @@ public class PowerPointController {
     private static final int PADDING = 5; // pointer window padding
     private static final int POINTER_SIZE = 30; // size of pointer
     private static final int POINTER_SPEED = 10; // speed of pointer
-    private int pointerX;
-    private int pointerY;
+
     private Robot robot;
 
     private JFrame pointerWindow = null;
@@ -28,28 +27,26 @@ public class PowerPointController {
             robot = new Robot();
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error Occurred!");
         }
-        LOGGER.log(Level.SEVERE,"run korse");
 
         //showPointer();
         //movePointer(100,100);
     }
-    public void keyPress(int keyCode) {
+    private void keyPress(int keyCode) {
         robot.keyPress(keyCode);
     }
 
-    public void keyRelease(int keyCode) {
+    private void keyRelease(int keyCode) {
         robot.keyRelease(keyCode);
     }
 
-    public void type(int keyCode) {
+    private void type(int keyCode) {
         keyPress(keyCode);
         robot.delay(50);
         keyRelease(keyCode);
     }
 
-    public void pressModifierButton(String keyword) {
+    private void pressModifierButton(String keyword) {
         switch (keyword) {
             case "beginning" :
                 type(KeyEvent.VK_F5);
@@ -87,17 +84,16 @@ public class PowerPointController {
                 pressModifierButton(packet.getString("key"));
                 break;
             case "pointer" :
-                pointerX = packet.getInt("deltaX");
-                pointerY = packet.getInt("deltaY");
-                movePointer(pointerX,pointerY);
-//                PPTPointer.movePointer(pointerX,pointerY);
-                LOGGER.log(Level.SEVERE,pointerX+","+pointerY);
+                int deltaX = packet.getInt("deltaX");
+                int deltaY = packet.getInt("deltaY");
+                movePointer(deltaX, deltaY);
+//                PPTPointer.movePointer(deltaX,deltaY);
+//                LOGGER.log(Level.INFO, deltaX +","+ deltaY);
                 break;
             case "point":
                 String pointerStatus = packet.getString("key");
                 if(pointerStatus.equals("on")) showPointer();
                 else if(pointerStatus.equals("off")) hidePointer();
-                // TODO: (Wadith) implement other actions
             default:
                 LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action\n");
         }
