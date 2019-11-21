@@ -1,28 +1,13 @@
 package com.rfw.hotkey_server;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-
-
-public class Main extends Application {
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("scene.fxml"));
-
-        Scene scene = new Scene(root);
-//        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-
-        stage.setTitle("Hotkey Server");
-        stage.setScene(scene);
-        stage.show();
-    }
-
+/**
+ * The entry point of the application
+ * This starts the server GUI
+ *
+ * @author Raheeb Hassan
+ */
+public class Main {
     public static void main(String[] args) {
-        launch(args);
+        Launcher.main(args);
     }
-
 }
