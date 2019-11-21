@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
 group 'com.rfw.hotkey_server'
@@ -49,6 +50,24 @@ dependencies {
             break
         default:
             throw new Exception('Unknown OS')
+    }
+}
+
+jar {
+    from ('libs/native') {
+        include '*'
+    }
+    manifest {
+        attributes "Main-Class": mainClassName
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+shadowJar {
+    from ('libs/native') {
+        include '*'
     }
 }
 
