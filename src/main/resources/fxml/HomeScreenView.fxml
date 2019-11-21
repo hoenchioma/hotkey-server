@@ -44,7 +44,7 @@
                             <children>
                                 <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
-                                        <Image url="@../images/hotkey-icon.png"/>
+                                        <Image url="@../images/hotkey-icon-102x128.png"/>
                                     </image>
                                 </ImageView>
                                 <VBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity">

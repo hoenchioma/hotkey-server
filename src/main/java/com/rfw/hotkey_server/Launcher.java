@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
@@ -18,6 +19,8 @@ public class Launcher extends Application {
     public void start(Stage stage) throws Exception {
         Parent root = HomeScreenViewController.getRoot();
 
+        Image icon = new Image(getClass().getResourceAsStream("/images/hotkey-icon-128x128.png"));
+
         Scene scene = new Scene(root);
 //        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
@@ -27,6 +30,7 @@ public class Launcher extends Application {
             System.exit(0);
         });
         stage.setScene(scene);
+        stage.getIcons().add(icon);
         stage.show();
 //        stage.setResizable(false);
     }
