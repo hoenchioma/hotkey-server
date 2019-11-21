@@ -43,7 +43,7 @@ public class MediaKeys {
             System.loadLibrary(libName);
         } catch (UnsatisfiedLinkError e) {
             try {
-                NativeUtils.loadLibraryFromJar(fileName);
+                NativeUtils.loadLibraryFromJar("/" + fileName);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
