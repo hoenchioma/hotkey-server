@@ -10,8 +10,8 @@ version '1.0'
 
 mainClassName = "com.rfw.hotkey_server.Main"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11.0
+targetCompatibility = 11.0
 
 String osName = System.getProperty('os.name').toLowerCase().split()[0]
 
@@ -31,7 +31,7 @@ dependencies {
 
     compile 'com.google.code.findbugs:jsr305:3.0.2' // debugging help library (Nullable, NonNull, etc.)
 
-    compile 'com.jfoenix:jfoenix:9.0.1' // material design library for javaFX
+    compile 'com.jfoenix:jfoenix:9.0.8' // material design library for javaFX
     compile 'org.json:json:20190722' // JSON handling
     compile 'org.imgscalr:imgscalr-lib:4.2' // image processing
     compile 'com.github.kenglxn.QRGen:javase:2.6.0' // QR code generation
