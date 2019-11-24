@@ -112,9 +112,7 @@ public class LiveScreenController {
         public void run() {
             BufferedImage cursor = null;
             try {
-                 cursor = ImageIO.read(new File(
-                        getClass().getClassLoader().getResource("images/cursor.png").getFile()
-                ));
+                 cursor = ImageIO.read(getClass().getResourceAsStream("/images/cursor.png"));
                  cursor = Scalr.resize(cursor, Scalr.Method.BALANCED, CURSOR_SIZE, CURSOR_SIZE);
             } catch (IOException | NullPointerException e) {
                 LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error reading cursor image file");
