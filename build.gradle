@@ -3,10 +3,20 @@ plugins {
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.8'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'edu.sc.seis.launch4j' version '2.4.6'
 }
 
 group 'com.rfw.hotkey_server'
-version '1.0-SNAPSHOT'
+
+ext {
+    // version numbers
+    majorVersion = 1
+    minorVersion = 0
+    patchVersion = 0
+    preRelease = "beta"
+}
+
+version generateVersionName()
 
 mainClassName = "com.rfw.hotkey_server.Main"
 
@@ -53,8 +63,9 @@ dependencies {
     }
 }
 
+// for creating normal jar
 jar {
-    from ('libs/native') {
+    from ('libs/native') { // copy native lib to jar
         include '*'
     }
     manifest {
@@ -65,12 +76,35 @@ jar {
     }
 }
 
+// for creating fat jar
 shadowJar {
-    from ('libs/native') {
+    from ('libs/native') { // copy native lib to jar
         include '*'
     }
 }
 
+// for creating exe
+launch4j {
+    copyConfigurable = project.tasks.shadowJar.outputs.files
+    jar = "lib/${project.tasks.shadowJar.archiveName}"
+    icon = "${projectDir}/icons/hotkey_icon.ico"
+    companyName = "rfw"
+    outfile = project.name + "-v" + generateVersionName() + ".exe"
+}
+
+// make sure jar is build before building exe
+createExe.dependsOn shadowJar
+
 run {
+    // setting up native library load path when run from IDE
     systemProperty "java.library.path", file("$projectDir/libs/native").absolutePath
+}
+
+// method from generating the version name (from version numbers)
+def generateVersionName() {
+    String versionName = "${majorVersion}.${minorVersion}.${patchVersion}"
+    if (preRelease != null && !preRelease.isEmpty()) {
+        versionName = versionName + "-" + preRelease
+    }
+    return versionName
 }
