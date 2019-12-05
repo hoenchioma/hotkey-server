@@ -1,10 +1,10 @@
 package com.rfw.hotkey_server.control;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,413 +17,202 @@ import static java.awt.event.KeyEvent.*;
 public class KeyboardController {
     private static final Logger LOGGER = Logger.getLogger(KeyboardController.class.getName());
 
+    private static final int DEFAULT_KEY_DELAY = 50;
+
     private Robot robot;
+    private Stack<Integer> keyStack = new Stack<>();
 
     public KeyboardController() throws AWTException {
         robot = new Robot();
     }
 
-    public void keyPress(int keyCode) {
+    void pressKey(int keyCode) {
         robot.keyPress(keyCode);
+        keyStack.push(keyCode);
+//        LOGGER.log(Level.INFO, "KeyboardController.pressKey: pressed " + keyCode);
     }
 
-    public void keyRelease(int keyCode) {
-        robot.keyRelease(keyCode);
+    void pressKeys(int... keyCodes) {
+        for (int i: keyCodes) pressKey(i);
     }
 
-    public void type(int keyCode) {
-        keyPress(keyCode);
-        robot.delay(50);
-        keyRelease(keyCode);
+    void releaseSomeKeys(int noOfKeys) {
+        while (!keyStack.isEmpty() && noOfKeys-- > 0) {
+//            LOGGER.log(Level.INFO, "KeyboardController.releaseSomeKeys: released key " + keyStack.peek());
+            robot.keyRelease(keyStack.pop());
+        }
     }
 
+    void releaseKeys() {
+        releaseSomeKeys(keyStack.size());
+    }
 
-    /**
-     * There will be Three types of keyWord
-     * 1. TYPE_MODIFIER
-     * 2. TYPE_CHARACTER
-     * 3. TYPE_COMMAND
-     */
-    public void pressCommandButton(String keyword) {
+    void releaseKey(int keyCode) {
+        int pos;
+        if ((pos = keyStack.search(keyCode)) != -1) {
+            robot.keyRelease(keyCode);
+            keyStack.remove(keyStack.size() - pos);
+            LOGGER.log(Level.INFO, "KeyboardController.releaseSomeKeys: released key " + keyCode);
+        }
+    }
+
+    void releaseKeys(int... keyCodes) {
+        for (int i: keyCodes) releaseKey(i);
+    }
+
+    private void typeKeys(int... keyCodes) {
+        typeKeysWithDelay(DEFAULT_KEY_DELAY, keyCodes);
+    }
+
+    private void typeKeysWithDelay(int delay, int... keyCodes) {
+        pressKeys(keyCodes);
+        robot.delay(delay);
+        releaseSomeKeys(keyCodes.length);
+    }
+
+    private void typeKey(int keyCode) {
+        typeKeyWithDelay(DEFAULT_KEY_DELAY, keyCode);
+    }
+
+    private void typeKeyWithDelay(int delay, int keyCode) {
+        typeKeysWithDelay(keyCode);
+    }
+
+    public int[] getKeyCode(char c) throws IllegalArgumentException {
+        switch (c) {
+            // alphabets
+            case 'a':	return new int[] {VK_A};
+            case 'b':	return new int[] {VK_B};
+            case 'c':	return new int[] {VK_C};
+            case 'd':	return new int[] {VK_D};
+            case 'e':	return new int[] {VK_E};
+            case 'f':	return new int[] {VK_F};
+            case 'g':	return new int[] {VK_G};
+            case 'h':	return new int[] {VK_H};
+            case 'i':	return new int[] {VK_I};
+            case 'j':	return new int[] {VK_J};
+            case 'k':	return new int[] {VK_K};
+            case 'l':	return new int[] {VK_L};
+            case 'm':	return new int[] {VK_M};
+            case 'n':	return new int[] {VK_N};
+            case 'o':	return new int[] {VK_O};
+            case 'p':	return new int[] {VK_P};
+            case 'q':	return new int[] {VK_Q};
+            case 'r':	return new int[] {VK_R};
+            case 's':	return new int[] {VK_S};
+            case 't':	return new int[] {VK_T};
+            case 'u':	return new int[] {VK_U};
+            case 'v':	return new int[] {VK_V};
+            case 'w':	return new int[] {VK_W};
+            case 'x':	return new int[] {VK_X};
+            case 'y':	return new int[] {VK_Y};
+            case 'z':	return new int[] {VK_Z};
+            case 'A':	return new int[] {VK_SHIFT, VK_A};
+            case 'B':	return new int[] {VK_SHIFT, VK_B};
+            case 'C':	return new int[] {VK_SHIFT, VK_C};
+            case 'D':	return new int[] {VK_SHIFT, VK_D};
+            case 'E':	return new int[] {VK_SHIFT, VK_E};
+            case 'F':	return new int[] {VK_SHIFT, VK_F};
+            case 'G':	return new int[] {VK_SHIFT, VK_G};
+            case 'H':	return new int[] {VK_SHIFT, VK_H};
+            case 'I':	return new int[] {VK_SHIFT, VK_I};
+            case 'J':	return new int[] {VK_SHIFT, VK_J};
+            case 'K':	return new int[] {VK_SHIFT, VK_K};
+            case 'L':	return new int[] {VK_SHIFT, VK_L};
+            case 'M':	return new int[] {VK_SHIFT, VK_M};
+            case 'N':	return new int[] {VK_SHIFT, VK_N};
+            case 'O':	return new int[] {VK_SHIFT, VK_O};
+            case 'P':	return new int[] {VK_SHIFT, VK_P};
+            case 'Q':	return new int[] {VK_SHIFT, VK_Q};
+            case 'R':	return new int[] {VK_SHIFT, VK_R};
+            case 'S':	return new int[] {VK_SHIFT, VK_S};
+            case 'T':	return new int[] {VK_SHIFT, VK_T};
+            case 'U':	return new int[] {VK_SHIFT, VK_U};
+            case 'V':	return new int[] {VK_SHIFT, VK_V};
+            case 'W':	return new int[] {VK_SHIFT, VK_W};
+            case 'X':	return new int[] {VK_SHIFT, VK_X};
+            case 'Y':	return new int[] {VK_SHIFT, VK_Y};
+            case 'Z':	return new int[] {VK_SHIFT, VK_Z};
+            // numbers
+            case '0':	return new int[] {VK_0};
+            case '1':	return new int[] {VK_1};
+            case '2':	return new int[] {VK_2};
+            case '3':	return new int[] {VK_3};
+            case '4':	return new int[] {VK_4};
+            case '5':	return new int[] {VK_5};
+            case '6':	return new int[] {VK_6};
+            case '7':	return new int[] {VK_7};
+            case '8':	return new int[] {VK_8};
+            case '9':	return new int[] {VK_9};
+            // special characters
+            case '`':	return new int[] {VK_BACK_QUOTE};
+            case '-':	return new int[] {VK_MINUS};
+            case '=':	return new int[] {VK_EQUALS};
+            case '~':	return new int[] {VK_BACK_QUOTE};
+            case '!':	return new int[] {VK_SHIFT, VK_1};
+            case '@':	return new int[] {VK_SHIFT, VK_2};
+            case '#':	return new int[] {VK_SHIFT, VK_3};
+            case '$':	return new int[] {VK_SHIFT, VK_4};
+            case '%':	return new int[] {VK_SHIFT, VK_5};
+            case '^':	return new int[] {VK_SHIFT, VK_6};
+            case '&':	return new int[] {VK_SHIFT, VK_7};
+            case '*':	return new int[] {VK_SHIFT, VK_8};
+            case '(':	return new int[] {VK_SHIFT, VK_9};
+            case ')':	return new int[] {VK_SHIFT, VK_0};
+            case '_':	return new int[] {VK_SHIFT, VK_MINUS};
+            case '+':	return new int[] {VK_SHIFT, VK_EQUALS};
+            case '\t':	return new int[] {VK_TAB};
+            case '\n':	return new int[] {VK_ENTER};
+            case '[':	return new int[] {VK_OPEN_BRACKET};
+            case ']':	return new int[] {VK_CLOSE_BRACKET};
+            case '\\':	return new int[] {VK_BACK_SLASH};
+            case '{':	return new int[] {VK_SHIFT, VK_OPEN_BRACKET};
+            case '}':	return new int[] {VK_SHIFT, VK_CLOSE_BRACKET};
+            case '|':	return new int[] {VK_SHIFT, VK_BACK_SLASH};
+            case ';':	return new int[] {VK_SEMICOLON};
+            case ':':	return new int[] {VK_SHIFT, VK_SEMICOLON};
+            case '\'':	return new int[] {VK_QUOTE};
+            case '"':	return new int[] {VK_SHIFT, VK_QUOTE};
+            case ',':	return new int[] {VK_COMMA};
+            case '<':	return new int[] {VK_SHIFT, VK_COMMA};
+            case '.':	return new int[] {VK_PERIOD};
+            case '>':	return new int[] {VK_SHIFT, VK_PERIOD};
+            case '/':	return new int[] {VK_SLASH};
+            case '?':	return new int[] {VK_SHIFT, VK_SLASH};
+            case ' ':	return new int[] {VK_SPACE};
+            case '\b':	return new int[] {VK_BACK_SPACE};
+            default: throw new IllegalArgumentException("Unknown character " + c);
+        }
+    }
+
+    public int[] getKeyCode(String keyword) throws IllegalArgumentException {
         switch (keyword) {
-            case "COPY":
-                keyPress(KeyEvent.VK_CONTROL);
-                keyPress(KeyEvent.VK_C);
-                robot.delay(10);
-                keyRelease(KeyEvent.VK_C);
-                keyRelease(KeyEvent.VK_CONTROL);
-                break;
-            case "PASTE":
-                keyPress(KeyEvent.VK_CONTROL);
-                keyPress(KeyEvent.VK_V);
-                robot.delay(10);
-                keyRelease(KeyEvent.VK_V);
-                keyRelease(KeyEvent.VK_CONTROL);
-                break;
-        }
-    }
-
-    public void pressModifierButton(String keyword) {
-        switch (keyword) {
-            case "ESC":
-                type(KeyEvent.VK_ESCAPE);
-                break;
-            case "HOME":
-                type(KeyEvent.VK_HOME);
-                break;
-            case "TAB":
-                type(KeyEvent.VK_TAB);
-                break;
-            case "PGUP":
-                type(KeyEvent.VK_PAGE_UP);
-                break;
-            case "PGDN":
-                type(KeyEvent.VK_PAGE_DOWN);
-                break;
-            case "UP":
-                type(KeyEvent.VK_UP);
-                break;
-            case "DOWN":
-                type(KeyEvent.VK_DOWN);
-                break;
-            case "LEFT":
-                type(KeyEvent.VK_LEFT);
-                break;
-            case "RIGHT":
-                type(KeyEvent.VK_RIGHT);
-                break;
-        }
-    }
-
-    public void pressAndHoldButton(String keyword) {
-        switch (keyword) {
-            case "SHIFT":
-                keyPress(KeyEvent.VK_SHIFT);
-                robot.delay(10);
-                keyRelease(KeyEvent.VK_SHIFT);
-                break;
-        }
-    }
-
-    public void pressCharacterButton(String keyword) {
-        char c = keyword.charAt(0);
-        try {
-            typeCharacter(c);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void doType(int... keyCodes) {
-        int length = keyCodes.length;
-        for (int i = 0; i < length; i++) {
-            robot.keyPress(keyCodes[i]);
-        }
-        robot.delay(10);
-        for (int i = length - 1; i >= 0; i--) {
-            robot.keyRelease(keyCodes[i]);
-        }
-        robot.keyRelease(VK_SHIFT);
-    }
-
-    public void typeCharacter(char character) {
-        switch (character) {
-            case 'a':
-                doType(VK_A);
-                break;
-            case 'b':
-                doType(VK_B);
-                break;
-            case 'c':
-                doType(VK_C);
-                break;
-            case 'd':
-                doType(VK_D);
-                break;
-            case 'e':
-                doType(VK_E);
-                break;
-            case 'f':
-                doType(VK_F);
-                break;
-            case 'g':
-                doType(VK_G);
-                break;
-            case 'h':
-                doType(VK_H);
-                break;
-            case 'i':
-                doType(VK_I);
-                break;
-            case 'j':
-                doType(VK_J);
-                break;
-            case 'k':
-                doType(VK_K);
-                break;
-            case 'l':
-                doType(VK_L);
-                break;
-            case 'm':
-                doType(VK_M);
-                break;
-            case 'n':
-                doType(VK_N);
-                break;
-            case 'o':
-                doType(VK_O);
-                break;
-            case 'p':
-                doType(VK_P);
-                break;
-            case 'q':
-                doType(VK_Q);
-                break;
-            case 'r':
-                doType(VK_R);
-                break;
-            case 's':
-                doType(VK_S);
-                break;
-            case 't':
-                doType(VK_T);
-                break;
-            case 'u':
-                doType(VK_U);
-                break;
-            case 'v':
-                doType(VK_V);
-                break;
-            case 'w':
-                doType(VK_W);
-                break;
-            case 'x':
-                doType(VK_X);
-                break;
-            case 'y':
-                doType(VK_Y);
-                break;
-            case 'z':
-                doType(VK_Z);
-                break;
-            case 'A':
-                doType(VK_SHIFT, VK_A);
-                break;
-            case 'B':
-                doType(VK_SHIFT, VK_B);
-                break;
-            case 'C':
-                doType(VK_SHIFT, VK_C);
-                break;
-            case 'D':
-                doType(VK_SHIFT, VK_D);
-                break;
-            case 'E':
-                doType(VK_SHIFT, VK_E);
-                break;
-            case 'F':
-                doType(VK_SHIFT, VK_F);
-                break;
-            case 'G':
-                doType(VK_SHIFT, VK_G);
-                break;
-            case 'H':
-                doType(VK_SHIFT, VK_H);
-                break;
-            case 'I':
-                doType(VK_SHIFT, VK_I);
-                break;
-            case 'J':
-                doType(VK_SHIFT, VK_J);
-                break;
-            case 'K':
-                doType(VK_SHIFT, VK_K);
-                break;
-            case 'L':
-                doType(VK_SHIFT, VK_L);
-                break;
-            case 'M':
-                doType(VK_SHIFT, VK_M);
-                break;
-            case 'N':
-                doType(VK_SHIFT, VK_N);
-                break;
-            case 'O':
-                doType(VK_SHIFT, VK_O);
-                break;
-            case 'P':
-                doType(VK_SHIFT, VK_P);
-                break;
-            case 'Q':
-                doType(VK_SHIFT, VK_Q);
-                break;
-            case 'R':
-                doType(VK_SHIFT, VK_R);
-                break;
-            case 'S':
-                doType(VK_SHIFT, VK_S);
-                break;
-            case 'T':
-                doType(VK_SHIFT, VK_T);
-                break;
-            case 'U':
-                doType(VK_SHIFT, VK_U);
-                break;
-            case 'V':
-                doType(VK_SHIFT, VK_V);
-                break;
-            case 'W':
-                doType(VK_SHIFT, VK_W);
-                break;
-            case 'X':
-                doType(VK_SHIFT, VK_X);
-                break;
-            case 'Y':
-                doType(VK_SHIFT, VK_Y);
-                break;
-            case 'Z':
-                doType(VK_SHIFT, VK_Z);
-                break;
-            case '`':
-                doType(VK_BACK_QUOTE);
-                break;
-            case '0':
-                doType(VK_0);
-                break;
-            case '1':
-                doType(VK_1);
-                break;
-            case '2':
-                doType(VK_2);
-                break;
-            case '3':
-                doType(VK_3);
-                break;
-            case '4':
-                doType(VK_4);
-                break;
-            case '5':
-                doType(VK_5);
-                break;
-            case '6':
-                doType(VK_6);
-                break;
-            case '7':
-                doType(VK_7);
-                break;
-            case '8':
-                doType(VK_8);
-                break;
-            case '9':
-                doType(VK_9);
-                break;
-            case '-':
-                doType(VK_MINUS);
-                break;
-            case '=':
-                doType(VK_EQUALS);
-                break;
-            case '~':
-                doType(VK_BACK_QUOTE);
-                break;
-            case '!':
-                doType(VK_SHIFT, VK_1);
-                break;
-            case '@':
-                doType(VK_SHIFT, VK_2);
-                break;
-            case '#':
-                doType(VK_SHIFT, VK_3);
-                break;
-            case '$':
-                doType(VK_SHIFT, VK_4);
-                break;
-            case '%':
-                doType(VK_SHIFT, VK_5);
-                break;
-            case '^':
-                doType(VK_SHIFT, VK_6);
-                break;
-            case '&':
-                doType(VK_SHIFT, VK_7);
-                break;
-            case '*':
-                doType(VK_SHIFT, VK_8);
-                break;
-            case '(':
-                doType(VK_SHIFT, VK_9);
-                break;
-            case ')':
-                doType(VK_SHIFT, VK_0);
-                break;
-            case '_':
-                doType(VK_SHIFT, VK_MINUS);
-                break;
-            case '+':
-                doType(VK_SHIFT, VK_EQUALS);
-                break;
-            case '\t':
-                doType(VK_TAB);
-                break;
-            case '\n':
-                doType(VK_ENTER);
-                break;
-            case '[':
-                doType(VK_OPEN_BRACKET);
-                break;
-            case ']':
-                doType(VK_CLOSE_BRACKET);
-                break;
-            case '\\':
-                doType(VK_BACK_SLASH);
-                break;
-            case '{':
-                doType(VK_SHIFT, VK_OPEN_BRACKET);
-                break;
-            case '}':
-                doType(VK_SHIFT, VK_CLOSE_BRACKET);
-                break;
-            case '|':
-                doType(VK_SHIFT, VK_BACK_SLASH);
-                break;
-            case ';':
-                doType(VK_SEMICOLON);
-                break;
-            case ':':
-                doType(VK_SHIFT, VK_SEMICOLON);
-                break;
-            case '\'':
-                doType(VK_QUOTE);
-                break;
-            case '"':
-                doType(VK_SHIFT, VK_QUOTE);
-                break;
-            case ',':
-                doType(VK_COMMA);
-                break;
-            case '<':
-                doType(VK_SHIFT, VK_COMMA);
-                break;
-            case '.':
-                doType(VK_PERIOD);
-                break;
-            case '>':
-                doType(VK_SHIFT, VK_PERIOD);
-                break;
-            case '/':
-                doType(VK_SLASH);
-                break;
-            case '?':
-                doType(VK_SHIFT, VK_SLASH);
-                break;
-            case ' ':
-                doType(VK_SPACE);
-                break;
-            case '\b':
-                doType(VK_BACK_SPACE);
-                break;
+            case "ESC":	    return new int[] {VK_ESCAPE};
+            case "HOME":	return new int[] {VK_HOME};
+            case "END":     return new int[] {VK_END};
+            case "PGUP":	return new int[] {VK_PAGE_UP};
+            case "PGDN":	return new int[] {VK_PAGE_DOWN};
+            case "UP":	    return new int[] {VK_UP};
+            case "DOWN":	return new int[] {VK_DOWN};
+            case "LEFT":	return new int[] {VK_LEFT};
+            case "RIGHT":	return new int[] {VK_RIGHT};
+            case "TAB":	    return new int[] {VK_TAB};
+            case "BSPACE":  return new int[] {VK_BACK_SPACE};
+            case "PRTSC":   return new int[] {VK_PRINTSCREEN};
+            case "COPY":    return new int[] {VK_CONTROL, VK_C};
+            case "PASTE":   return new int[] {VK_CONTROL, VK_V};
             default:
-                throw new IllegalArgumentException("Cannot type character " + character);
+                if (keyword.length() == 1) return getKeyCode(keyword.charAt(0));
+                else throw new IllegalArgumentException("Unknown keyword " + keyword);
+        }
+    }
+
+    public int getModifierKeyCode(String keyword) throws IllegalArgumentException {
+        switch (keyword) {
+            case "SHIFT": return VK_SHIFT;
+            case "CTRL":  return VK_CONTROL;
+            case "WIN":   return VK_WINDOWS;
+            default: throw new IllegalArgumentException();
         }
     }
 
@@ -432,20 +221,51 @@ public class KeyboardController {
      * @param packet JSON packet
      */
     public void handleIncomingPacket(JSONObject packet) {
-        String action = packet.getString("action");
-        switch (action) {
-            case "char":
-                pressCharacterButton(packet.getString("key"));
-                break;
-            case "modifier":
-                pressModifierButton(packet.getString("key"));
-                break;
-            case "command":
-                pressCommandButton(packet.getString("key"));
-                break;
-            default:
-                LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: invalid keyboard action\n");
+        String actionType = packet.getString("action");
+        String key = null;
+        if (packet.has("key")) {
+            key = packet.getString("key");
+        }
+        try {
+            switch (actionType) {
+                case "press":
+                    releaseKeys();
+                    assert key != null;
+                    pressKeys(getKeyCode(key));
+                    break;
+                case "release":
+                    if (key != null) releaseKeys(getKeyCode(key));
+                    else releaseKeys();
+                    break;
+                case "type":
+                    releaseKeys();
+                    // process modifiers
+                    if (packet.has("modifiers")) {
+                        JSONArray modifiers = packet.getJSONArray("modifiers");
+                        for (int i = 0, n = modifiers.length(); i < n; i++) {
+                            String modifierKey = modifiers.getString(i);
+                            pressKey(getModifierKeyCode(modifierKey));
+                        }
+                    }
+                    assert key != null;
+                    typeKeys(getKeyCode(key));
+                    releaseKeys();
+                    break;
+            }
+        } catch (IllegalArgumentException e) {
+            LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: " + e.getMessage());
         }
     }
 
+    public void stop() {
+        releaseKeys();
+    }
+
+    public static void main(String[] args) throws AWTException, InterruptedException {
+        Robot robot = new Robot();
+        KeyboardController keyboardController = new KeyboardController();
+        keyboardController.pressKey(VK_SHIFT);
+        keyboardController.typeKeys(VK_A);
+        keyboardController.stop();
+    }
 }
