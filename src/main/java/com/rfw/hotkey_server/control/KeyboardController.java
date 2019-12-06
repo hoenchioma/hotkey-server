@@ -1,26 +1,29 @@
 package com.rfw.hotkey_server.control;
 
+import com.rfw.hotkey_server.util.misc.StackSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.awt.*;
-import java.util.Stack;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.awt.event.KeyEvent.*;
 
 /**
- * A class to handle Keyboard actions from clients
+ * A class to handle Keyboard actions from client
+ *
  * @author Shadman Wadith
+ * @author Raheeb Hassan
  */
 public class KeyboardController {
     private static final Logger LOGGER = Logger.getLogger(KeyboardController.class.getName());
 
     private static final int DEFAULT_KEY_DELAY = 50;
 
-    private Robot robot;
-    private Stack<Integer> keyStack = new Stack<>();
+    private final Robot robot;
+    private final StackSet<Integer> keyStack = new StackSet<>();
 
     public KeyboardController() throws AWTException {
         robot = new Robot();
@@ -28,7 +31,7 @@ public class KeyboardController {
 
     void pressKey(int keyCode) {
         robot.keyPress(keyCode);
-        keyStack.push(keyCode);
+        keyStack.pushIfAbsent(keyCode);
 //        LOGGER.log(Level.INFO, "KeyboardController.pressKey: pressed " + keyCode);
     }
 
@@ -39,25 +42,27 @@ public class KeyboardController {
     void releaseSomeKeys(int noOfKeys) {
         while (!keyStack.isEmpty() && noOfKeys-- > 0) {
 //            LOGGER.log(Level.INFO, "KeyboardController.releaseSomeKeys: released key " + keyStack.peek());
-            robot.keyRelease(keyStack.pop());
+            robot.keyRelease(keyStack.popIfPresent());
         }
     }
 
+    // release all currently pressed keys
     void releaseKeys() {
         releaseSomeKeys(keyStack.size());
     }
 
     void releaseKey(int keyCode) {
-        int pos;
-        if ((pos = keyStack.search(keyCode)) != -1) {
+        if (keyStack.contains(keyCode)) {
             robot.keyRelease(keyCode);
-            keyStack.remove(keyStack.size() - pos);
-            LOGGER.log(Level.INFO, "KeyboardController.releaseSomeKeys: released key " + keyCode);
+            keyStack.remove(keyCode);
+//            LOGGER.log(Level.INFO, "KeyboardController.releaseSomeKeys: released key " + keyCode);
         }
     }
 
     void releaseKeys(int... keyCodes) {
-        for (int i: keyCodes) releaseKey(i);
+        for (int i = keyCodes.length-1; i >= 0; i--) {
+            releaseKey(keyCodes[i]);
+        }
     }
 
     private void typeKeys(int... keyCodes) {
@@ -202,8 +207,10 @@ public class KeyboardController {
             case "COPY":    return new int[] {VK_CONTROL, VK_C};
             case "PASTE":   return new int[] {VK_CONTROL, VK_V};
             default:
+                // try matching single character code
                 if (keyword.length() == 1) return getKeyCode(keyword.charAt(0));
-                else throw new IllegalArgumentException("Unknown keyword " + keyword);
+                // try matching modifier keycode
+                else return new int[] {getModifierKeyCode(keyword)};
         }
     }
 
@@ -211,10 +218,26 @@ public class KeyboardController {
         switch (keyword) {
             case "SHIFT": return VK_SHIFT;
             case "CTRL":  return VK_CONTROL;
+            case "ALT":   return VK_ALT;
             case "WIN":   return VK_WINDOWS;
-            default: throw new IllegalArgumentException();
+            default: throw new IllegalArgumentException("Unknown keyword " + keyword);
         }
     }
+
+    private void pressModifiers(ArrayList<String> modifiers) {
+        for (int i = 0, n = modifiers.size(); i < n; i++) {
+            pressKey(getModifierKeyCode(modifiers.get(i)));
+        }
+    }
+
+    private void releaseModifiers(ArrayList<String> modifiers) {
+        for (int i = modifiers.size()-1; i >= 0; i--) {
+            releaseKey(getModifierKeyCode(modifiers.get(i)));
+        }
+    }
+
+    // buffer to hold String ArrayList of modifiers
+    private final ArrayList<String> _modifiers = new ArrayList<>();
 
     /**
      * Handles incoming packet from client
@@ -222,50 +245,47 @@ public class KeyboardController {
      */
     public void handleIncomingPacket(JSONObject packet) {
         String actionType = packet.getString("action");
+
+        // extract key
         String key = null;
         if (packet.has("key")) {
             key = packet.getString("key");
         }
+
+        // extract modifiers (to a string ArrayList)
+        _modifiers.clear();
+        if (packet.has("modifiers")) {
+            JSONArray modifiersJson = packet.getJSONArray("modifiers");
+            for (int i = 0, n = modifiersJson.length(); i < n; i++) {
+                _modifiers.add(modifiersJson.getString(i));
+            }
+        }
+
         try {
             switch (actionType) {
                 case "press":
-                    releaseKeys();
-                    assert key != null;
-                    pressKeys(getKeyCode(key));
+                    pressModifiers(_modifiers);
+                    if (key != null) pressKeys(getKeyCode(key));
                     break;
                 case "release":
                     if (key != null) releaseKeys(getKeyCode(key));
                     else releaseKeys();
+                    releaseModifiers(_modifiers);
                     break;
                 case "type":
-                    releaseKeys();
-                    // process modifiers
-                    if (packet.has("modifiers")) {
-                        JSONArray modifiers = packet.getJSONArray("modifiers");
-                        for (int i = 0, n = modifiers.length(); i < n; i++) {
-                            String modifierKey = modifiers.getString(i);
-                            pressKey(getModifierKeyCode(modifierKey));
-                        }
-                    }
-                    assert key != null;
-                    typeKeys(getKeyCode(key));
-                    releaseKeys();
+                    pressModifiers(_modifiers);
+                    if (key != null) typeKeys(getKeyCode(key));
+                    releaseModifiers(_modifiers);
                     break;
+                default:
+                    throw new IllegalStateException("Unknown action type " + actionType);
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: " + e.getMessage());
         }
     }
 
     public void stop() {
         releaseKeys();
-    }
-
-    public static void main(String[] args) throws AWTException, InterruptedException {
-        Robot robot = new Robot();
-        KeyboardController keyboardController = new KeyboardController();
-        keyboardController.pressKey(VK_SHIFT);
-        keyboardController.typeKeys(VK_A);
-        keyboardController.stop();
     }
 }
