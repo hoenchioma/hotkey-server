@@ -1,5 +1,5 @@
 /*
-Copyright [yyyy] [name of copyright owner]
+Copyright 2019 Raheeb Hassan
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -266,47 +266,55 @@ public class StackSet<E> implements Set<E>, Queue<E> {
     }
 
     public static void main(String[] args) {
-        StackSet<Integer> st = new StackSet<>();
-        Stack<Integer> st2 = new Stack<>();
+        // Some benchmarks
 
-        int testNo = (int) 100;
+        StackSet<Integer> st = new StackSet<>();
 
         Random rand = new Random();
-        long time = System.nanoTime();
+        int testNo = (int) 1e7;
+
+        System.out.println("Test elements: " + testNo);
+
+        long time = System.currentTimeMillis();
         for (int i = 0; i < testNo; i++) {
             st.push(rand.nextInt());
         }
-        System.out.println("StackSet.push " + (System.nanoTime() - time));
+        System.out.println("StackSet.push " + (System.currentTimeMillis() - time) + "ms");
 
-        time = System.nanoTime();
+        time = System.currentTimeMillis();
         for (int i = 0; i < testNo; i++) {
-            st2.push(rand.nextInt());
+            st.popIfPresent();
         }
-        System.out.println("Stack.push " + (System.nanoTime() - time));
+        System.out.println("StackSet.pop " + (System.currentTimeMillis() - time) + "ms");
 
-//        time = System.nanoTime();
-//        for (int i = 0; i < testNo; i++) {
-//            st.popIfPresent();
-//        }
-//        System.out.println("StackSet.pop " + (System.nanoTime() - time));
-//
-//        time = System.nanoTime();
-//        for (int i = 0; i < testNo; i++) {
-//            st2.pop();
-//        }
-//        System.out.println("Stack.pop " + (System.nanoTime() - time));
+        for (int i = 0; i < testNo; i++) {
+            st.push(rand.nextInt());
+        }
 
-        time = System.nanoTime();
+        time = System.currentTimeMillis();
         for (int i = 0; i < testNo; i++) {
             st.remove(rand.nextInt());
         }
-        System.out.println("StackSet.remove " + (System.nanoTime() - time));
+        System.out.println("StackSet.remove " + (System.currentTimeMillis() - time) + "ms");
 
-        time = System.nanoTime();
-        for (int i = 0; i < testNo; i++) {
-            st2.remove((Integer) rand.nextInt());
-        }
-        System.out.println("Stack.remove " + (System.nanoTime() - time));
-
+//        Stack<Integer> st2 = new Stack<>();
+//
+//        time = System.currentTimeMillis();
+//        for (int i = 0; i < testNo; i++) {
+//            st2.push(rand.nextInt());
+//        }
+//        System.out.println("Stack.push " + (System.currentTimeMillis() - time) + "ms");
+//
+//        time = System.currentTimeMillis();
+//        for (int i = 0; i < testNo; i++) {
+//            st2.remove((Integer) rand.nextInt());
+//        }
+//        System.out.println("Stack.remove " + (System.currentTimeMillis() - time) + "ms");
+//
+//        time = System.currentTimeMillis();
+//        for (int i = 0; i < testNo; i++) {
+//            st2.pop();
+//        }
+//        System.out.println("Stack.pop " + (System.currentTimeMillis() - time) + "ms");
     }
 }
