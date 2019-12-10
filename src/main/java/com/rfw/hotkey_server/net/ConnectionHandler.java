@@ -42,7 +42,7 @@ public class ConnectionHandler extends Thread {
 
     void stopConnection() {
         stop = true;
-        packetHandler.exit();
+        packetHandler.cleanUp();
         server.removeConnection();
         server.onDisconnect(); // call on disconnect method to notify wiFiServer
     }

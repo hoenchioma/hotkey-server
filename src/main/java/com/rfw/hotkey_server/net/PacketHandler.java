@@ -23,7 +23,8 @@ public class PacketHandler {
 
     private ConnectionHandler connectionHandler;
 
-    private KeyboardController keyboardController = new KeyboardController();
+    private BaseKeyboardController keyboard = new BaseKeyboardController();
+    private KeyboardController keyboardController = new KeyboardController(keyboard);
     private MouseController mouseController = new MouseController();
     private PowerPointController powerPointController = new PowerPointController();
     private PDFController pdfController = new PDFController();
@@ -41,13 +42,7 @@ public class PacketHandler {
             case "liveScreen":  liveScreenController.handleIncomingPacket(packet);  break;
             case "media":       mediaController.handleIncomingPacket(packet);       break;
             case "macro":       macroController.handleIncomingPacket(packet);       break;
-            case "ping":
-                try {
-                    if (packet.getBoolean("pingBack")) {
-                        connectionHandler.sendPacket(new JSONObject().put("type", "ping"));
-                    }
-                } catch (JSONException ignored) {}
-                break;
+            case "ping":        handlePing(packet);                                 break;
             default:
                 LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type " + packetType + "\n");
         }
@@ -58,9 +53,17 @@ public class PacketHandler {
         handle(new JSONObject(new JSONTokener(message)));
     }
 
-    public void exit() {
-        liveScreenController.stop();
-        powerPointController.stop();
-        keyboardController.stop();
+    private void handlePing(JSONObject packet) {
+        try {
+            if (packet.getBoolean("pingBack")) {
+                connectionHandler.sendPacket(new JSONObject().put("type", "ping"));
+            }
+        } catch (JSONException ignored) {}
+    }
+
+    public void cleanUp() {
+        keyboard.cleanUp();
+        liveScreenController.cleanUp();
+        powerPointController.cleanUp();
     }
 }

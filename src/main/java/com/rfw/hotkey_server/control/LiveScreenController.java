@@ -36,7 +36,7 @@ public class LiveScreenController {
         robot = new Robot();
     }
 
-    public void stop() {
+    public void cleanUp() {
         if (liveScreenSender != null) {
             liveScreenSender.running = false;
         }
