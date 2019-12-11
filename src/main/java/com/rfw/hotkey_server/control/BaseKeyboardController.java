@@ -43,24 +43,32 @@ public class BaseKeyboardController {
     }
 
     public void releaseKeys(int... keyCodes) {
-        // releases keys in REVERSE order
+        // releases keys in reverse order
         for (int i = keyCodes.length-1; i >= 0; i--) {
             releaseKey(keyCodes[i]);
         }
     }
 
+    public void releaseKeys(Collection<Integer> keyCodes) {
+        // for collections releases keys in normal order
+        // (as reverse order is not possible for all types of collections)
+        for (int i: keyCodes) releaseKey(i);
+    }
+
     public void releaseKeys(List<Integer> keyCodes) {
+        // releases keys in reverse order
         for (int i: Lists.reverse(keyCodes)) releaseKey(i);
     }
 
     public void releaseKeys(Deque<Integer> keyCodes) {
+        // releases keys in reverse order
         Iterator<Integer> it = keyCodes.descendingIterator();
         while (it.hasNext()) releaseKey(it.next());
     }
 
     // release all currently pressed keys
     public void releaseKeys() {
-        releaseKeys(new ArrayList<>(pressedKeys));
+        releaseKeys(pressedKeys);
     }
 
     public void typeKey(int keyCode) {
@@ -320,6 +328,7 @@ public class BaseKeyboardController {
         }
     }
 
+    // should be called before disposing class
     public void cleanUp() {
         releaseKeys();
     }
