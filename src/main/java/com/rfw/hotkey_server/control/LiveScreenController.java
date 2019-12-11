@@ -52,6 +52,7 @@ public class LiveScreenController {
                 float targetFps = packet.getFloat("fps");
                 float compressRatio = packet.getFloat("compressRatio");
                 try {
+                    stop();
                     Socket socket = new Socket();
                     socket.connect(new InetSocketAddress(ipAddress, port), CONNECTION_TIMEOUT);
                     liveScreenSender = new LiveScreenSender(socket, screenSizeX, screenSizeY, targetFps, compressRatio);
