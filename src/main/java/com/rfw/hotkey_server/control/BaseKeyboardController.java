@@ -11,6 +11,12 @@ import java.util.logging.Logger;
 import static java.awt.event.KeyEvent.*;
 import static java.awt.event.KeyEvent.VK_SHIFT;
 
+/**
+ * Central keyboard controller for
+ * key press, release, type and keeping track of pressed keys
+ *
+ * @author Raheeb Hassan
+ */
 public class BaseKeyboardController {
     private static final Logger LOGGER = Logger.getLogger(KeyboardController.class.getName());
 
