@@ -32,6 +32,11 @@ public class KeyboardController {
         if (packet.has("key")) {
             String key = packet.getString("key"); // extract key
             keys = keyboard.getKeyCodes(key); // decode key
+            if (keys == null) {
+                LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: keyCode for " + key + " not found");
+                LOGGER.log(Level.INFO, "KeyboardController.handleIncomingPacket: aborting key press operation");
+                return;
+            }
         }
 
         // extract modifiers (to a string ArrayList)
@@ -41,6 +46,11 @@ public class KeyboardController {
             modifiers = new int[modifiersJson.length()];
             for (int i = 0; i < modifiers.length; i++) {
                 modifiers[i] = keyboard.getModifierKeyCode(modifiersJson.getString(i)); // put decoded key code in array
+                if (modifiers[i] == -1) {
+                    LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: modifier keyCode for " + modifiersJson.getString(i) + " not found");
+                    LOGGER.log(Level.INFO, "KeyboardController.handleIncomingPacket: aborting key press operation");
+                    return;
+                }
             }
         }
 
