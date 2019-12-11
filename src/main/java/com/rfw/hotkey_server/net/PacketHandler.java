@@ -30,7 +30,7 @@ public class PacketHandler {
     private PDFController pdfController = new PDFController();
     private LiveScreenController liveScreenController = new LiveScreenController();
     private MediaController mediaController = new MediaController();
-    private MacroController macroController = new MacroController();
+    private MacroController macroController = new MacroController(keyboard);
 
     public void handle(JSONObject packet) {
         String packetType = packet.getString("type");

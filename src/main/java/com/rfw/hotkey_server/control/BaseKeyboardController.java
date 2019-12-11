@@ -4,10 +4,8 @@ import com.google.common.collect.Lists;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.awt.event.KeyEvent.*;
@@ -16,7 +14,7 @@ import static java.awt.event.KeyEvent.VK_SHIFT;
 public class BaseKeyboardController {
     private static final Logger LOGGER = Logger.getLogger(KeyboardController.class.getName());
 
-    private static final int DEFAULT_KEY_DELAY = 50;
+    public static final int DEFAULT_KEY_DELAY = 50;
 
     private final Robot robot = new Robot();
 
@@ -30,43 +28,60 @@ public class BaseKeyboardController {
 //        LOGGER.log(Level.INFO, "KeyboardController.pressKey: pressed " + keyCode);
     }
 
-    void pressKeys(int... keyCodes) {
+    public void pressKeys(int... keyCodes) {
         for (int i: keyCodes) pressKey(i);
     }
 
-    void pressKeys(java.util.List<Integer> keyCodes) {
+    public void pressKeys(Collection<Integer> keyCodes) {
         for (int i: keyCodes) pressKey(i);
     }
 
-    void releaseKey(int keyCode) {
+    public void releaseKey(int keyCode) {
         robot.keyRelease(keyCode);
         pressedKeys.remove(keyCode);
 //        LOGGER.log(Level.INFO, "KeyboardController.releaseSomeKeys: released key " + keyCode);
     }
 
-    void releaseKeys(int... keyCodes) {
+    public void releaseKeys(int... keyCodes) {
         // releases keys in REVERSE order
         for (int i = keyCodes.length-1; i >= 0; i--) {
             releaseKey(keyCodes[i]);
         }
     }
 
-    void releaseKeys(List<Integer> keyCodes) {
-        for (int i: Lists.reverse(keyCodes)) pressKey(i);
+    public void releaseKeys(List<Integer> keyCodes) {
+        for (int i: Lists.reverse(keyCodes)) releaseKey(i);
+    }
+
+    public void releaseKeys(Deque<Integer> keyCodes) {
+        Iterator<Integer> it = keyCodes.descendingIterator();
+        while (it.hasNext()) releaseKey(it.next());
     }
 
     // release all currently pressed keys
-    void releaseKeys() {
+    public void releaseKeys() {
         releaseKeys(new ArrayList<>(pressedKeys));
     }
 
-    void typeKey(int keyCode) {
+    public void typeKey(int keyCode) {
         pressKey(keyCode);
         robot.delay(DEFAULT_KEY_DELAY);
         releaseKey(keyCode);
     }
 
-    void typeKeys(int... keyCodes) {
+    public void typeKeys(int... keyCodes) {
+        pressKeys(keyCodes);
+        robot.delay(DEFAULT_KEY_DELAY);
+        releaseKeys(keyCodes);
+    }
+
+    public void typeKeys(List<Integer> keyCodes) {
+        pressKeys(keyCodes);
+        robot.delay(DEFAULT_KEY_DELAY);
+        releaseKeys(keyCodes);
+    }
+
+    public void typeKeys(Deque<Integer> keyCodes) {
         pressKeys(keyCodes);
         robot.delay(DEFAULT_KEY_DELAY);
         releaseKeys(keyCodes);
@@ -258,8 +273,7 @@ public class BaseKeyboardController {
      * @param keyword String representing commands
      * @return keycode, null if not found
      */
-    public @Nullable
-    int[] getCommandKeyCodes(String keyword) {
+    public @Nullable int[] getCommandKeyCodes(String keyword) {
         switch (keyword.toUpperCase()) {
             case "COPY":    return new int[]{VK_CONTROL, VK_C};
             case "PASTE":   return new int[]{VK_CONTROL, VK_V};
@@ -267,10 +281,16 @@ public class BaseKeyboardController {
         }
     }
 
+    /**
+     * Get the key code corresponding to keyword
+     * (searches CharKeyCode, ModifierKeyCode, SpecialKeyCode, etc.)
+     * @param keyword keyword to identify key (in any case)
+     * @return the corresponding keycode (-1 if not found)
+     */
     public int getKeyCode(String keyword) {
         int res;
         if (keyword.length() == 1) {
-            if ((res = getCharKeyCode(keyword.charAt(0))) != -1) return res;
+            if ((res = getCharKeyCode(Character.toLowerCase(keyword.charAt(0)))) != -1) return res;
             else return -1;
         } else {
             if ((res = getSpecialKeyCode(keyword)) != -1) return res;
@@ -279,7 +299,13 @@ public class BaseKeyboardController {
         }
     }
 
-    public int[] getKeyCodes(String keyword) {
+    /**
+     * Get the corresponding key codes to a keyword
+     * (searches CharKeyCode, SecondaryCharKeyCode, ModifierKeyCode, SpecialKeyCode, etc.)
+     * @param keyword keyword to identify keys (in any case)
+     * @return the corresponding keycodes (null if not found)
+     */
+    public @Nullable int[] getKeyCodes(String keyword) {
         int res;
         int[] resArr;
         if (keyword.length() == 1) {
