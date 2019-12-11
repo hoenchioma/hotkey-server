@@ -10,7 +10,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
- /** A class to handle ppt slides
+/**
+ * A class to control the presentation / slideshow application (Powerpoint)
+ *
  * @author Shadman Wadith
  */
 public class PowerPointController {
@@ -23,7 +25,6 @@ public class PowerPointController {
     private Robot robot;
 
     private JFrame pointerWindow = null;
-    private final Object pointerMonitor = new Object();
 
     public PowerPointController() throws AWTException {
         robot = new Robot();
@@ -99,30 +100,25 @@ public class PowerPointController {
     }
 
     private void showPointer() {
-        synchronized (pointerMonitor) {
-            pointerWindow = makePointerWindow();
-        }
+        hidePointer();
+        pointerWindow = makePointerWindow();
     }
 
     private void hidePointer() {
-        synchronized (pointerMonitor) {
-            if (pointerWindow != null) {
-                pointerWindow.dispose();
-                pointerWindow = null;
-            }
+        if (pointerWindow != null) {
+            pointerWindow.dispose();
+            pointerWindow = null;
         }
     }
 
     private void movePointer(int deltaX, int deltaY) {
         SwingUtilities.invokeLater(() -> {
-            synchronized (pointerMonitor) {
-                if (pointerWindow != null) {
-                    JFrame window = pointerWindow;
-                    window.setLocation(
-                            window.getLocation().x + deltaX,
-                            window.getLocation().y + deltaY
-                    );
-                }
+            if (pointerWindow != null) {
+                JFrame window = pointerWindow;
+                window.setLocation(
+                        window.getLocation().x + deltaX,
+                        window.getLocation().y + deltaY
+                );
             }
         });
     }
