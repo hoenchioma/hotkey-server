@@ -26,6 +26,7 @@ public class KeyboardController {
      * @param packet JSON packet
      */
     public void handleIncomingPacket(JSONObject packet) {
+//        LOGGER.log(Level.INFO, "KeyboardController.handleIncomingPacket: " + packet);
         String actionType = packet.getString("action");
 
         int[] keys = new int[0];
@@ -71,11 +72,13 @@ public class KeyboardController {
                     break;
                 case "clear":
                     keyboard.releaseKeys();
+                    break;
                 default:
                     throw new IllegalStateException("Unknown action type " + actionType);
             }
         } catch (IllegalArgumentException | IllegalStateException e) {
             LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
