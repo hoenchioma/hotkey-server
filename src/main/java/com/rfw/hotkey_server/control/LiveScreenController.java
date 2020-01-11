@@ -36,7 +36,7 @@ public class LiveScreenController {
         robot = new Robot();
     }
 
-    public void stop() {
+    public void cleanUp() {
         if (liveScreenSender != null) {
             liveScreenSender.running = false;
         }
@@ -52,7 +52,7 @@ public class LiveScreenController {
                 float targetFps = packet.getFloat("fps");
                 float compressRatio = packet.getFloat("compressRatio");
                 try {
-                    stop();
+                    cleanUp();
                     Socket socket = new Socket();
                     socket.connect(new InetSocketAddress(ipAddress, port), CONNECTION_TIMEOUT);
                     liveScreenSender = new LiveScreenSender(socket, screenSizeX, screenSizeY, targetFps, compressRatio);

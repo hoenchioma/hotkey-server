@@ -41,6 +41,7 @@ dependencies {
 
     compile 'com.google.code.findbugs:jsr305:3.0.2' // debugging help library (Nullable, NonNull, etc.)
 
+    implementation("com.google.guava:guava:28.1-jre") // google library (miscellaneous)
     compile 'com.jfoenix:jfoenix:9.0.8' // material design library for javaFX
     compile 'org.json:json:20190722' // JSON handling
     compile 'org.imgscalr:imgscalr-lib:4.2' // image processing

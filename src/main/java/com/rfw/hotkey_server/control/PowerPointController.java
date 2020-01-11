@@ -173,7 +173,7 @@ public class PowerPointController {
         });
     }
 
-    public void stop() {
+    public void cleanUp() {
         hidePointer();
     }
 }

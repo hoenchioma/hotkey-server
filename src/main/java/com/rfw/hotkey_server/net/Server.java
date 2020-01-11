@@ -24,7 +24,7 @@ public interface Server {
     // unique identifier String for server
     String SERVER_UUID = "8fbdf1a6-1185-43a7-952a-3f38f6af0c36";
     // version number for server (only changed for major changes)
-    int SERVER_VERSION = 2;
+    int SERVER_VERSION = 3;
 
     ConnectionType getConnectionType();
 
