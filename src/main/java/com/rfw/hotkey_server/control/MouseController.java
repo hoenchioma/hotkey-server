@@ -26,22 +26,22 @@ public class MouseController {
     public void handleIncomingPacket(JSONObject packet) {
         String action = packet.getString("action");
         switch (action) {
-            case "TouchpadMove":
+            case "touchpadMove":
                 Point mousePointer = MouseInfo.getPointerInfo().getLocation();
                 robot.mouseMove(mousePointer.x + packet.getInt("deltaX"), mousePointer.y + packet.getInt("deltaY"));
                 break;
-            case "LeftClick":
+            case "leftClick":
                 robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
                 robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
                 break;
-            case "RightClick":
+            case "rightClick":
                 robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
                 robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
                 break;
-            case "ScrollMove":
+            case "scrollMove":
                 robot.mouseWheel((int) (packet.getInt("deltaY") / 30));
                 break;
-            case "ScrollClick":
+            case "scrollClick":
                 robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
                 robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
             default:
