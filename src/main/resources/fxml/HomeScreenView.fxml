@@ -25,20 +25,6 @@
                 <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
                             minWidth="-Infinity" prefHeight="160.0" prefWidth="848.0">
                     <children>
-                        <JFXButton fx:id="settingsButton" alignment="CENTER" layoutX="345.0" layoutY="12.0"
-                                   maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                                   onAction="#settingsButtonAction" prefHeight="42.0" prefWidth="46.0"
-                                   ripplerFill="#000000e1"
-                                   style="-fx-background-color: #ffffff00; -fx-background-radius: 80;" text=" "
-                                   AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
-                            <graphic>
-                                <ImageView fitHeight="31.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@../images/three-dot-white-50px.png"/>
-                                    </image>
-                                </ImageView>
-                            </graphic>
-                        </JFXButton>
                         <HBox alignment="CENTER" prefHeight="100.0" spacing="20.0" AnchorPane.leftAnchor="0.0"
                               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
                             <children>
@@ -60,6 +46,20 @@
                                 </VBox>
                             </children>
                         </HBox>
+                        <JFXButton fx:id="settingsButton" alignment="CENTER" layoutX="345.0" layoutY="12.0"
+                                   maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                                   onAction="#settingsButtonAction" prefHeight="42.0" prefWidth="46.0"
+                                   ripplerFill="#000000e1"
+                                   style="-fx-background-color: #ffffff00; -fx-background-radius: 80;" text=" "
+                                   AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                            <graphic>
+                                <ImageView fitHeight="31.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/three-dot-white-50px.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </JFXButton>
                     </children>
                 </AnchorPane>
                 <StackPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
