@@ -111,6 +111,7 @@ public class LiveScreenController {
 
         @Override
         public void run() {
+            // preload fake cursor
             BufferedImage cursor = null;
             try {
                  cursor = ImageIO.read(getClass().getResourceAsStream("/images/cursor.png"));
@@ -119,6 +120,8 @@ public class LiveScreenController {
                 LOGGER.log(Level.SEVERE, "LiveScreenSender.run: error reading cursor image file");
                 e.printStackTrace();
             }
+
+            // main loop
             while (running) {
                 try {
                     // capture screenshot
@@ -141,6 +144,7 @@ public class LiveScreenController {
 
 //                    LOGGER.log(Level.INFO, "LiveScreenSender.run: image size: " + imageBuff.length + " " + (int) imageBuff.length);
 
+                    // send image length first
                     out.writeInt(imageBuff.length);
                     out.flush();
                     out.write(imageBuff);

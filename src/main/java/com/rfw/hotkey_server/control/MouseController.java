@@ -17,6 +17,8 @@ import java.util.logging.Logger;
 public class MouseController {
     private static final Logger LOGGER = Logger.getLogger(MouseController.class.getName());
 
+    public static final int CLICK_DURATION = 50;
+
     private Robot robot;
 
     public MouseController() throws AWTException {
@@ -32,10 +34,12 @@ public class MouseController {
                 break;
             case "leftClick":
                 robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+                robot.delay(CLICK_DURATION);
                 robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
                 break;
             case "rightClick":
                 robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
+                robot.delay(CLICK_DURATION);
                 robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
                 break;
             case "scrollMove":
@@ -43,6 +47,7 @@ public class MouseController {
                 break;
             case "scrollClick":
                 robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
+                robot.delay(CLICK_DURATION);
                 robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
             default:
                 LOGGER.log(Level.SEVERE, "MouseController.handleIncomingPacket: invalid keyboard action\n");

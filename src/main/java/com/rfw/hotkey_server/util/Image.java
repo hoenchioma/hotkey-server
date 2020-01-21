@@ -1,6 +1,7 @@
 package com.rfw.hotkey_server.util;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -43,6 +44,12 @@ public final class Image {
         return out.toByteArray();
     }
 
+    /**
+     * Convert BufferedImage to PNG format (byte stream)
+     *
+     * @param image in BufferedImage form
+     * @return byte array with image in PNG
+     */
     public static byte[] getPNG(BufferedImage image) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ImageIO.write(image, "png", out);
@@ -70,12 +77,12 @@ public final class Image {
      * @param image the image in byte array form
      */
     public static @Nonnull
-    JFrame showImageInWindow(byte[] image) {
+    JFrame showImageInWindow(byte[] image, @Nullable String windowTitle) {
         JFrame frame = new JFrame();
         try {
             SwingUtilities.invokeAndWait(() -> {
                 ImageIcon icon = new ImageIcon(image);
-                frame.setTitle("Scan this");
+                if (windowTitle != null) frame.setTitle(windowTitle);
                 JLabel label = new JLabel(icon);
                 frame.add(label);
                 frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

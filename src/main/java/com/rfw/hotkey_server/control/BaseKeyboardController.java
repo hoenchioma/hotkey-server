@@ -20,7 +20,7 @@ import static java.awt.event.KeyEvent.VK_SHIFT;
 public class BaseKeyboardController {
     private static final Logger LOGGER = Logger.getLogger(KeyboardController.class.getName());
 
-    public static final int DEFAULT_KEY_DELAY = 50;
+    public static final int KEY_PRESS_DURATION = 50;
 
     private final Robot robot = new Robot();
 
@@ -79,25 +79,25 @@ public class BaseKeyboardController {
 
     public void typeKey(int keyCode) {
         pressKey(keyCode);
-        robot.delay(DEFAULT_KEY_DELAY);
+        robot.delay(KEY_PRESS_DURATION);
         releaseKey(keyCode);
     }
 
     public void typeKeys(int... keyCodes) {
         pressKeys(keyCodes);
-        robot.delay(DEFAULT_KEY_DELAY);
+        robot.delay(KEY_PRESS_DURATION);
         releaseKeys(keyCodes);
     }
 
     public void typeKeys(List<Integer> keyCodes) {
         pressKeys(keyCodes);
-        robot.delay(DEFAULT_KEY_DELAY);
+        robot.delay(KEY_PRESS_DURATION);
         releaseKeys(keyCodes);
     }
 
     public void typeKeys(Deque<Integer> keyCodes) {
         pressKeys(keyCodes);
-        robot.delay(DEFAULT_KEY_DELAY);
+        robot.delay(KEY_PRESS_DURATION);
         releaseKeys(keyCodes);
     }
 

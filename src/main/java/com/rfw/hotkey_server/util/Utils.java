@@ -17,6 +17,7 @@ public final class Utils {
 
     /**
      * Make a QR code image from a String
+     *
      * @param code String representing the QR code
      * @return byte array representing the array
      */
@@ -30,9 +31,11 @@ public final class Utils {
 
     /**
      * show the given string as a QR code (in swing window)
+     *
      * @param code String to convert to a QR code
      */
-    public static @Nonnull JFrame showQRCode(String code, int imageSizeX, int imageSizeY) {
-        return Image.showImageInWindow(makeQRCode(code, imageSizeX, imageSizeY, ImageType.JPG));
+    public static @Nonnull
+    JFrame showQRCode(String code, int imageSizeX, int imageSizeY) {
+        return Image.showImageInWindow(makeQRCode(code, imageSizeX, imageSizeY, ImageType.JPG), "Scan this");
     }
 }

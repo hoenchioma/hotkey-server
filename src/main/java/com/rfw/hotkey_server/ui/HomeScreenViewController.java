@@ -88,13 +88,16 @@ public class HomeScreenViewController implements Initializable {
 
         // select server in WiFi mode
         menuWiFiAction(new ActionEvent());
+
+        // keep menu hidden on start
         hideMenu();
 
         parent.setOnMouseClicked(this::onMouseClick);
     }
 
     private void onMouseClick(MouseEvent event) {
-        // if user clicks on any place other than button menu is hidden
+        // if user clicks on any place other than the settings button
+        // the menu is hidden
         if (menuIsShowing) hideMenu();
     }
 
