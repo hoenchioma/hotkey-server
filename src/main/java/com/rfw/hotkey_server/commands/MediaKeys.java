@@ -1,6 +1,9 @@
 package com.rfw.hotkey_server.commands;
 
-import com.rfw.hotkey_server.util.misc.NativeUtils;
+import com.rfw.hotkey_server.util.Utils;
+import com.rfw.hotkey_server.util.misc.NativeLibLoader;
+import com.rfw.hotkey_server.util.misc.PlatformException;
+import javafx.scene.control.Alert;
 
 import java.io.IOException;
 
@@ -11,43 +14,41 @@ import java.io.IOException;
  */
 public class MediaKeys {
     static {
-        loadLibrary("media-keys");
+        try {
+            loadLib();
+        } catch (PlatformException | IOException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to load media-keys library\nMedia keys functionality will not work").show();
+            e.printStackTrace();
+        }
+    }
+
+    // static flag indicating whether the native lib has been loaded
+    private static boolean libLoaded = false;
+
+    public static boolean isLibLoaded() {
+        return libLoaded;
     }
 
     /**
-     * load the native library
-     * (based on OS and JVM architecture)
+     * load the MediaKeys JNI library
+     *
+     * @throws PlatformException unsupported OS/architecture
+     * @throws IOException failed to load lib (file IO exception)
      */
-    private static void loadLibrary(String libName) {
-        final String osName = System.getProperty("os.name").toLowerCase();
-        final String jreArch = System.getProperty("sun.arch.data.model");
-        String fileName = libName;
-        if (osName.contains("win")) { // windows system
-            if (jreArch.equals("32")) { // 32 bit jre
-                libName += "-x86";
-            } else if (jreArch.equals("64")) { // 64 bit jre
-                libName += "-x64";
-            } else {
-                throw new IllegalStateException("Unknown JVM architecture");
-            }
-            fileName = libName + ".dll";
-        } else if (osName.contains("nix") | osName.contains("nux") | osName.contains("aix")) { // unix systems
-            if (jreArch.equals("32")) throw new IllegalStateException("32 bit JRE on Linux not supported");
-            fileName = "lib" + libName + ".so";
-        } else if (osName.contains("mac")) { // macOS system
-            throw new IllegalStateException("MacOS not supported");
-        } else {
-            throw new IllegalStateException("Unsupported OS");
-        }
+    public static void loadLib() throws PlatformException, IOException {
+        String libName = "media-keys";
+        String fileName = Utils.getLibFileName(libName);
         try {
             System.loadLibrary(libName);
         } catch (UnsatisfiedLinkError e) {
+            // if failed to load normally try loading from jar file
             try {
-                NativeUtils.loadLibraryFromJar("/" + fileName);
+                NativeLibLoader.loadLibraryFromJar("/" + fileName);
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                throw new IOException("Failed to load lib from JAR", ex);
             }
         }
+        libLoaded = true;
     }
 
     public static native void volumeMute();

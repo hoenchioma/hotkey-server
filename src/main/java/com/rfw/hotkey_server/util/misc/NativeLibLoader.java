@@ -1,6 +1,6 @@
 package com.rfw.hotkey_server.util.misc;
 /*
- * Class NativeUtils is published under the The MIT License:
+ * Class NativeLibLoader is published under the The MIT License:
  *
  * Copyright (c) 2012 Adam Heinrich <adam@adamh.cz>
  *
@@ -39,7 +39,7 @@ import java.nio.file.StandardCopyOption;
  * @see <a href="https://github.com/adamheinrich/native-utils">https://github.com/adamheinrich/native-utils</a>
  *
  */
-public class NativeUtils {
+public class NativeLibLoader {
 
     /**
      * The minimum length a prefix for a file has to have according to {@link File#createTempFile(String, String)}}.
@@ -55,7 +55,7 @@ public class NativeUtils {
     /**
      * Private constructor - this class will never be instanced
      */
-    private NativeUtils() {
+    private NativeLibLoader() {
     }
 
     /**
@@ -95,7 +95,7 @@ public class NativeUtils {
 
         File temp = new File(temporaryDir, filename);
 
-        try (InputStream is = NativeUtils.class.getResourceAsStream(path)) {
+        try (InputStream is = NativeLibLoader.class.getResourceAsStream(path)) {
             Files.copy(is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             temp.delete();
