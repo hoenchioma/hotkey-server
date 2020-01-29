@@ -20,7 +20,7 @@ public class MacroController {
         this.keyboard = keyboard;
     }
 
-    public void handleIncomingPacket(JSONObject packet) {
+    public void handle(JSONObject packet) {
         int totalKeys = packet.getInt("size");
         Deque<Integer> keys = new ArrayDeque<>();
 

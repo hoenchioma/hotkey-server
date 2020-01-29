@@ -35,13 +35,13 @@ public class PacketHandler {
     public void handle(JSONObject packet) {
         String packetType = packet.getString("type");
         switch (packetType) {
-            case "keyboard":    keyboardController.handleIncomingPacket(packet);    break;
-            case "mouse":       mouseController.handleIncomingPacket(packet);       break;
-            case "ppt":         powerPointController.handleIncomingPacket(packet);  break;
-            case "pdf":         pdfController.handleIncomingPacket(packet);         break;
-            case "liveScreen":  liveScreenController.handleIncomingPacket(packet);  break;
-            case "media":       mediaController.handleIncomingPacket(packet);       break;
-            case "macro":       macroController.handleIncomingPacket(packet);       break;
+            case "keyboard":    keyboardController.handle(packet);    break;
+            case "mouse":       mouseController.handle(packet);       break;
+            case "ppt":         powerPointController.handle(packet);  break;
+            case "pdf":         pdfController.handle(packet);         break;
+            case "liveScreen":  liveScreenController.handle(packet);  break;
+            case "media":       mediaController.handle(packet);       break;
+            case "macro":       macroController.handle(packet);       break;
             case "ping":        handlePing(packet);                                 break;
             default:
                 LOGGER.log(Level.SEVERE, "PacketHandler.handle: unknown packet type " + packetType + "\n");

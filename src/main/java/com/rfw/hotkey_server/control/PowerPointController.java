@@ -76,7 +76,7 @@ public class PowerPointController {
         }
     }
 
-    public void handleIncomingPacket(JSONObject packet) {
+    public void handle(JSONObject packet) {
         String action = packet.getString("action");
         switch (action) {
 
@@ -95,7 +95,7 @@ public class PowerPointController {
                 if(pointerStatus.equals("on")) showPointer();
                 else if(pointerStatus.equals("off")) hidePointer();
             default:
-                LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action\n");
+                LOGGER.log(Level.SEVERE, "PowerPointController.handle: invalid powerpoint action\n");
         }
     }
 

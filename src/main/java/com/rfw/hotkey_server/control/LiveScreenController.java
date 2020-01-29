@@ -42,7 +42,7 @@ public class LiveScreenController {
         }
     }
 
-    public void handleIncomingPacket(JSONObject packet) {
+    public void handle(JSONObject packet) {
         switch (packet.getString("command")) {
             case "start":
                 String ipAddress = packet.getString("ipAddress");
@@ -58,9 +58,9 @@ public class LiveScreenController {
                     liveScreenSender = new LiveScreenSender(socket, screenSizeX, screenSizeY, targetFps, compressRatio);
                     liveScreenSender.start();
                 } catch (SocketTimeoutException e) {
-                    LOGGER.log(Level.SEVERE, "LiveScreenController.handleIncomingPacket: socket connection timed out\n");
+                    LOGGER.log(Level.SEVERE, "LiveScreenController.handle: socket connection timed out\n");
                 } catch (IOException e) {
-                    LOGGER.log(Level.SEVERE, "LiveScreenController.handleIncomingPacket: error starting LiveScreenSender\n");
+                    LOGGER.log(Level.SEVERE, "LiveScreenController.handle: error starting LiveScreenSender\n");
                     e.printStackTrace();
                 }
                 break;
@@ -70,7 +70,7 @@ public class LiveScreenController {
                 }
                 break;
             default:
-                LOGGER.log(Level.SEVERE, "LiveScreenController.handleIncomingPacket: invalid packet\n");
+                LOGGER.log(Level.SEVERE, "LiveScreenController.handle: invalid packet\n");
         }
     }
 

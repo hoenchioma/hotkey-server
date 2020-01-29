@@ -159,7 +159,7 @@ public class PDFController {
      * Handles incoming packet from client side
      * @param packet JSON Packet
      */
-    public void handleIncomingPacket(JSONObject packet) {
+    public void handle(JSONObject packet) {
         String action = packet.getString("action");
         String key = packet.getString("key");
         String platform = packet.getString("platform");
@@ -172,7 +172,7 @@ public class PDFController {
                 gotoPage(key, platform);
                 break;
             default:
-                LOGGER.log(Level.SEVERE, "PowerPointController.handleIncomingPacket: invalid powerpoint action\n");
+                LOGGER.log(Level.SEVERE, "PowerPointController.handle: invalid powerpoint action\n");
         }
     }
 }

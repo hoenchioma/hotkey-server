@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class MediaController {
     private static final Logger LOGGER = Logger.getLogger(MediaController.class.getName());
 
-    public void handleIncomingPacket(JSONObject packet) {
+    public void handle(JSONObject packet) {
         if (MediaKeys.isLibLoaded()) {
             String action = packet.getString("action");
             switch (action) {
@@ -37,10 +37,10 @@ public class MediaController {
                     MediaKeys.volumeMute();
                     break;
                 default:
-                    LOGGER.log(Level.SEVERE, "MediaController.handleIncomingPacket: unknown package action (" + action + ")");
+                    LOGGER.log(Level.SEVERE, "MediaController.handle: unknown package action (" + action + ")");
             }
         } else {
-            LOGGER.log(Level.SEVERE, "MediaController.handleIncomingPacket: media-keys library not loaded");
+            LOGGER.log(Level.SEVERE, "MediaController.handle: media-keys library not loaded");
         }
     }
 }

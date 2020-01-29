@@ -25,8 +25,8 @@ public class KeyboardController {
      * Handles incoming packet from client
      * @param packet JSON packet
      */
-    public void handleIncomingPacket(JSONObject packet) {
-//        LOGGER.log(Level.INFO, "KeyboardController.handleIncomingPacket: " + packet);
+    public void handle(JSONObject packet) {
+//        LOGGER.log(Level.INFO, "KeyboardController.handle: " + packet);
         String actionType = packet.getString("action");
 
         int[] keys = new int[0];
@@ -34,8 +34,8 @@ public class KeyboardController {
             String key = packet.getString("key"); // extract key
             keys = keyboard.getKeyCodes(key); // decode key
             if (keys == null) {
-                LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: keyCode for " + key + " not found");
-                LOGGER.log(Level.INFO, "KeyboardController.handleIncomingPacket: aborting key press operation");
+                LOGGER.log(Level.SEVERE, "KeyboardController.handle: keyCode for " + key + " not found");
+                LOGGER.log(Level.INFO, "KeyboardController.handle: aborting key press operation");
                 return;
             }
         }
@@ -48,8 +48,8 @@ public class KeyboardController {
             for (int i = 0; i < modifiers.length; i++) {
                 modifiers[i] = keyboard.getModifierKeyCode(modifiersJson.getString(i)); // put decoded key code in array
                 if (modifiers[i] == -1) {
-                    LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: modifier keyCode for " + modifiersJson.getString(i) + " not found");
-                    LOGGER.log(Level.INFO, "KeyboardController.handleIncomingPacket: aborting key press operation");
+                    LOGGER.log(Level.SEVERE, "KeyboardController.handle: modifier keyCode for " + modifiersJson.getString(i) + " not found");
+                    LOGGER.log(Level.INFO, "KeyboardController.handle: aborting key press operation");
                     return;
                 }
             }
@@ -77,7 +77,7 @@ public class KeyboardController {
                     throw new IllegalStateException("Unknown action type " + actionType);
             }
         } catch (IllegalArgumentException | IllegalStateException e) {
-            LOGGER.log(Level.SEVERE, "KeyboardController.handleIncomingPacket: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "KeyboardController.handle: " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -25,7 +25,7 @@ public class MouseController {
         robot = new Robot();
     }
 
-    public void handleIncomingPacket(JSONObject packet) {
+    public void handle(JSONObject packet) {
         String action = packet.getString("action");
         switch (action) {
             case "touchpadMove":
@@ -50,7 +50,7 @@ public class MouseController {
                 robot.delay(CLICK_DURATION);
                 robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
             default:
-                LOGGER.log(Level.SEVERE, "MouseController.handleIncomingPacket: invalid keyboard action\n");
+                LOGGER.log(Level.SEVERE, "MouseController.handle: invalid keyboard action\n");
         }
     }
 }
