@@ -20,7 +20,7 @@ import static java.awt.event.KeyEvent.VK_SHIFT;
 public class BaseKeyboardController {
     private static final Logger LOGGER = Logger.getLogger(KeyboardController.class.getName());
 
-    public static final int KEY_PRESS_DURATION = 50;
+    public static final int KEY_PRESS_DURATION = 30; // ms
 
     private final Robot robot = new Robot();
 

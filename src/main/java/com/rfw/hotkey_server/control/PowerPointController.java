@@ -10,6 +10,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.awt.event.KeyEvent.*;
+
 /**
  * A class to control the presentation / slideshow application (Powerpoint)
  *
@@ -22,56 +24,52 @@ public class PowerPointController {
     private static final int POINTER_SIZE = 30; // size of pointer
     private static final int POINTER_SPEED = 10; // speed of pointer
 
-    private Robot robot;
-
+    private BaseKeyboardController keyboard;
     private JFrame pointerWindow = null;
 
-    public PowerPointController() throws AWTException {
-        robot = new Robot();
+    public PowerPointController(BaseKeyboardController keyboard) {
+        this.keyboard = keyboard;
 
         //showPointer();
         //movePointer(100,100);
     }
-    private void keyPress(int keyCode) {
-        robot.keyPress(keyCode);
-    }
 
-    private void keyRelease(int keyCode) {
-        robot.keyRelease(keyCode);
-    }
-
-    private void type(int keyCode) {
-        keyPress(keyCode);
-        robot.delay(50);
-        keyRelease(keyCode);
-    }
+//    private void keyPress(int keyCode) {
+//        robot.keyPress(keyCode);
+//    }
+//
+//    private void keyRelease(int keyCode) {
+//        robot.keyRelease(keyCode);
+//    }
+//
+//    private void type(int keyCode) {
+//        keyPress(keyCode);
+//        robot.delay(50);
+//        keyRelease(keyCode);
+//    }
 
     private void pressModifierButton(String keyword) {
         switch (keyword) {
             case "beginning":
-                type(KeyEvent.VK_F5);
+                keyboard.typeKey(VK_F5);
                 break;
             case "current":
-                keyPress(KeyEvent.VK_SHIFT);
-                keyPress(KeyEvent.VK_F5);
-                robot.delay(10);
-                keyRelease(KeyEvent.VK_F5);
-                keyRelease(KeyEvent.VK_SHIFT);
+                keyboard.typeKeys(VK_SHIFT, VK_F5);
                 break;
             case "ESC":
-                type(KeyEvent.VK_ESCAPE);
+                keyboard.typeKey(VK_ESCAPE);
                 break;
             case "UP":
-                type(KeyEvent.VK_UP);
+                keyboard.typeKey(VK_UP);
                 break;
             case "DOWN":
-                type(KeyEvent.VK_DOWN);
+                keyboard.typeKey(VK_DOWN);
                 break;
             case "LEFT":
-                type(KeyEvent.VK_LEFT);
+                keyboard.typeKey(VK_LEFT);
                 break;
             case "RIGHT":
-                type(KeyEvent.VK_RIGHT);
+                keyboard.typeKey(VK_RIGHT);
                 break;
         }
     }
@@ -79,7 +77,6 @@ public class PowerPointController {
     public void handle(JSONObject packet) {
         String action = packet.getString("action");
         switch (action) {
-
             case "modifier":
                 pressModifierButton(packet.getString("key"));
                 break;
@@ -149,7 +146,8 @@ public class PowerPointController {
     }
 
     public static void main(String[] args) throws AWTException {
-        PowerPointController powerPointController = new PowerPointController();
+        BaseKeyboardController keyboard = new BaseKeyboardController();
+        PowerPointController powerPointController = new PowerPointController(keyboard);
         powerPointController.showPointer();
         JFrame window = powerPointController.pointerWindow;
 

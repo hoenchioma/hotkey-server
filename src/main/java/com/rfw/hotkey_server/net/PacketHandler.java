@@ -26,8 +26,8 @@ public class PacketHandler {
     private BaseKeyboardController keyboard = new BaseKeyboardController();
     private KeyboardController keyboardController = new KeyboardController(keyboard);
     private MouseController mouseController = new MouseController();
-    private PowerPointController powerPointController = new PowerPointController();
-    private PDFController pdfController = new PDFController();
+    private PowerPointController powerPointController = new PowerPointController(keyboard);
+    private PDFController pdfController = new PDFController(keyboard);
     private LiveScreenController liveScreenController = new LiveScreenController();
     private MediaController mediaController = new MediaController();
     private MacroController macroController = new MacroController(keyboard);
